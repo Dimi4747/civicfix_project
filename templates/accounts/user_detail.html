@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block title %}{{ profile_user.get_full_name }} - Profil Utilisateur{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto">
+    <!-- Profile Header -->
+    <div class="bg-gradient-to-r from-blue-600 to-blue-700 rounded-2xl p-12 text-white mb-10">
+        <div class="flex items-end gap-6">
+            <div class="w-24 h-24 bg-white rounded-full flex items-center justify-center">
+                <i class="fas fa-user text-blue-600 text-4xl"></i>
+            </div>
+            <div>
+                <h1 class="text-4xl font-bold">{{ profile_user.get_full_name }}</h1>
+                <p class="text-blue-100 mt-1">{{ profile_user.email }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Main Info -->
+        <div class="lg:col-span-2">
+            <!-- Profile Card -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-8 mb-8">
+                <h2 class="text-2xl font-bold text-gray-900 mb-6">Informations Personnelles</h2>
+                <div class="space-y-5">
+                    <div class="border-b border-gray-200 pb-4">
+                        <p class="text-sm text-gray-600 font-medium mb-1"><i class="fas fa-envelope text-gray-400 mr-2"></i>Email</p>
+                        <p class="text-lg text-gray-900 font-semibold">{{ profile_user.email }}</p>
+                    </div>
+                    <div class="border-b border-gray-200 pb-4">
+                        <p class="text-sm text-gray-600 font-medium mb-1"><i class="fas fa-user-tag text-gray-400 mr-2"></i>Rôle</p>
+                        <p class="text-lg">
+                            <span class="px-4 py-1 rounded-full text-sm font-semibold {% if profile_user.is_admin %}bg-purple-100 text-purple-800{% elif profile_user.is_staff %}bg-blue-100 text-blue-800{% else %}bg-gray-100 text-gray-800{% endif %}">
+                                {{ profile_user.get_role_display }}
+                            </span>
+                        </p>
+                    </div>
+                    <div class="border-b border-gray-200 pb-4">
+                        <p class="text-sm text-gray-600 font-medium mb-1"><i class="fas fa-phone text-gray-400 mr-2"></i>Téléphone</p>
+                        <p class="text-lg text-gray-900 font-semibold">{{ profile_user.phone|default:"Non spécifié" }}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-600 font-medium mb-1"><i class="fas fa-calendar-alt text-gray-400 mr-2"></i>Membre depuis</p>
+                        <p class="text-lg text-gray-900 font-semibold">{{ profile_user.created_at|date:"d M Y" }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bio Section (if available) -->
+            {% if profile_user.bio %}
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
+                <h2 class="text-2xl font-bold text-gray-900 mb-4">À propos</h2>
+                <p class="text-gray-700 leading-relaxed">{{ profile_user.bio }}</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Sidebar Stats -->
+        <div class="lg:col-span-1">
+            <!-- Stats Card -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-8 sticky top-24">
+                <h3 class="text-xl font-bold text-gray-900 mb-6">Statistiques</h3>
+                <div class="space-y-6">
+                    <div class="text-center pb-6 border-b border-gray-200">
+                        <p class="text-4xl font-bold text-blue-600">{{ reports_count }}</p>
+                        <p class="text-gray-600 mt-2">Rapports créés</p>
+                    </div>
+                    <div class="text-center pb-6 border-b border-gray-200">
+                        <p class="text-4xl font-bold text-green-600">{{ profile_user.reputation_score|default:"0" }}</p>
+                        <p class="text-gray-600 mt-2">Score de réputation</p>
+                    </div>
+                    <div class="bg-blue-50 rounded-lg p-4">
+                        <p class="text-sm text-blue-900 text-center">
+                            <i class="fas fa-check-circle text-green-600 mr-1"></i>
+                            Contributeur actif
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

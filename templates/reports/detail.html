@@ -1,0 +1,295 @@
+{% extends "base.html" %}
+
+{% block title %}{{ report.title }} - Détail du Rapport{% endblock %}
+
+{% block head_extra %}
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+          integrity="sha256-p4NxAoJBhIINfBIWw9JvsitVwbl5S32POKE4p/B9Gk/v"
+          crossorigin=""/>
+    <style>
+        /* Définir une hauteur pour le conteneur de la carte */
+        #reportMap {
+            height: 300px;
+            border-radius: 0.75rem; /* rounded-xl */
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto">
+    <div class="mb-8">
+        <div class="flex items-start justify-between mb-4">
+            <div class="flex-1">
+                <h1 class="text-4xl font-extrabold text-gray-900 mb-3">{{ report.title }}</h1>
+                <div class="flex flex-wrap items-center gap-4">
+                    <div class="flex items-center gap-2 text-gray-600">
+                        <i class="fas fa-user-circle text-blue-primary"></i>
+                        <a href="{% url 'accounts:user_detail' report.author.id %}" class="text-blue-primary hover:text-blue-700 font-medium">{{ report.author.get_full_name }}</a>
+                    </div>
+                    <div class="flex items-center gap-2 text-gray-600">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>{{ report.created_at|date:"d M Y à H:i" }}</span>
+                    </div>
+                    {% with report.get_status_badge as badge_class %}
+                    <span class="px-4 py-1 rounded-full text-sm font-semibold text-white {{ badge_class }}">
+                        {{ report.get_status_display }}
+                    </span>
+                    {% endwith %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="lg:col-span-2 space-y-6">
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="bg-white rounded-xl shadow-md p-6 border border-gray-200">
+                    <p class="text-sm text-gray-600 font-medium mb-2"><i class="fas fa-tag text-blue-primary mr-2"></i>Catégorie</p>
+                    <p class="text-lg font-bold text-gray-900">{{ report.get_category_display }}</p>
+                </div>
+                <div class="bg-white rounded-xl shadow-md p-6 border border-gray-200">
+                    <p class="text-sm text-gray-600 font-medium mb-2"><i class="fas fa-exclamation-circle text-red-600 mr-2"></i>Priorité</p>
+                    <p class="text-lg font-bold text-gray-900">{{ report.get_priority_display }}</p>
+                </div>
+                <div class="bg-white rounded-xl shadow-md p-6 border border-gray-200">
+                    <p class="text-sm text-gray-600 font-medium mb-2"><i class="fas fa-eye text-gray-500 mr-2"></i>Vues du Rapport</p>
+                    <p class="text-lg font-bold text-gray-900">{{ report.views_count }}</p>
+                </div>
+            </div>
+
+            {% if report.latitude and report.longitude %}
+            <div class="bg-white rounded-xl shadow-md p-6 border border-gray-200">
+                <h3 class="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+                    <i class="fas fa-location-arrow text-blue-primary"></i> Localisation Précise
+                </h3>
+                <p class="text-gray-600 mb-4">
+                    {% if report.location %}
+                        **Adresse Estimée :** {{ report.location }}
+                    {% else %}
+                        Coordonnées GPS : (Lat: {{ report.latitude }}, Lon: {{ report.longitude }})
+                    {% endif %}
+                </p>
+                <div id="reportMap" class="shadow-lg"></div>
+            </div>
+            {% endif %}
+
+            <div class="bg-white rounded-xl shadow-md p-8 border border-gray-200">
+                <h3 class="text-2xl font-bold text-gray-900 mb-4">Description</h3>
+                <p class="text-gray-700 leading-relaxed text-lg">{{ report.description }}</p>
+            </div>
+
+            {% if report.resolution_notes %}
+            <div class="bg-green-50 rounded-xl border-2 border-green-300 p-8 shadow-md">
+                <div class="flex items-start gap-4">
+                    <i class="fas fa-check-circle text-green-600 text-3xl mt-1"></i>
+                    <div class="flex-1">
+                        <h3 class="text-xl font-bold text-green-900 mb-2">Résolution du Problème</h3>
+                        <p class="text-green-800">{{ report.resolution_notes }}</p>
+                        <p class="text-sm text-green-600 mt-3 font-medium">Résolu le : {{ report.updated_at|date:"d M Y" }}</p>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            {% if report.attachments.all %}
+            <div class="bg-white rounded-xl shadow-md p-8 border border-gray-200">
+                <h3 class="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+                    <i class="fas fa-paperclip text-blue-primary"></i> Pièces jointes ({{ report.attachments.count }})
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {% for attachment in report.attachments.all %}
+                    
+                    {% with attachment.file.url|lower as file_url %}
+                        {# 1. Définir les valeurs par défaut #}
+                        {% with 'fas fa-file' as icon %}
+                        {% with 'text-gray-600' as color %}
+                        
+                        {# 2. Redéfinir l'icône et la couleur si une condition est remplie (utilisation de IF simples) #}
+                        {% if file_url|slice:"-4:" == ".pdf" %}
+                            {% with 'fas fa-file-pdf' as icon %}
+                            {% with 'text-red-600' as color %}
+                            {% endwith %}
+                            {% endwith %}
+                        {% endif %}
+                        
+                        {% if file_url|slice:"-4:" == ".doc" or file_url|slice:"-5:" == ".docx" %}
+                            {% with 'fas fa-file-word' as icon %}
+                            {% with 'text-blue-600' as color %}
+                            {% endwith %}
+                            {% endwith %}
+                        {% endif %}
+                        
+                        {% if file_url|slice:"-4:" == ".jpg" or file_url|slice:"-4:" == ".png" or file_url|slice:"-4:" == ".gif" %}
+                            {% with 'fas fa-image' as icon %}
+                            {% with 'text-green-600' as color %}
+                            {% endwith %}
+                            {% endwith %}
+                        {% endif %}
+
+                        <a href="{{ attachment.file.url }}" target="_blank" class="flex flex-col items-center justify-center p-4 bg-gray-50 rounded-lg hover:bg-blue-50 border border-gray-200 hover:border-blue-300 transition text-center min-h-[120px]">
+                            <i class="{{ icon }} {{ color }} text-3xl mb-2"></i>
+                            <div class="flex-1 min-w-0 w-full">
+                                <p class="font-medium text-gray-900 truncate" title="{{ attachment.filename }}">{{ attachment.filename|truncatechars:18 }}</p>
+                                <p class="text-xs text-gray-500 mt-1">{{ attachment.file.size|filesizeformat }}</p>
+                            </div>
+                        </a>
+                        
+                        {# 3. Fermer les with de portée #}
+                        {% endwith %}
+                        {% endwith %}
+                    {% endwith %}
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="flex flex-wrap gap-3 pt-4 border-t border-gray-200">
+                {% if can_edit %}
+                <a href="{% url 'reports:edit' report.id %}" class="inline-flex items-center gap-2 bg-blue-primary text-white px-6 py-3 rounded-lg hover:bg-blue-700 font-bold transition shadow-md">
+                    <i class="fas fa-edit"></i> Modifier
+                </a>
+                <a href="{% url 'reports:delete' report.id %}" class="inline-flex items-center gap-2 bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 font-bold transition shadow-md">
+                    <i class="fas fa-trash"></i> Supprimer
+                </a>
+                {% endif %}
+                <a href="{% url 'reports:api_export_pdf' report.id %}" class="inline-flex items-center gap-2 bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 font-bold transition shadow-md">
+                    <i class="fas fa-download"></i> Télécharger PDF
+                </a>
+                <a href="{% url 'reports:list' %}" class="inline-flex items-center gap-2 bg-gray-200 text-gray-800 px-6 py-3 rounded-lg hover:bg-gray-300 font-bold transition">
+                    <i class="fas fa-arrow-left"></i> Retour aux Rapports
+                </a>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden mt-6">
+                <div class="p-8 border-b border-gray-200">
+                    <h3 class="text-2xl font-bold text-gray-900 flex items-center gap-2">
+                        <i class="fas fa-comments text-blue-primary"></i>
+                        Commentaires <span class="text-lg text-gray-500">({{ report.comments_count }})</span>
+                    </h3>
+                </div>
+
+                {% if user.is_authenticated %}
+                <div class="p-8 border-b border-gray-200 bg-gray-50">
+                    <form method="POST" action="{% url 'reports:comment' report.id %}" class="space-y-4">
+                        {% csrf_token %}
+                        <label for="comment-content" class="block text-base font-medium text-gray-700">Ajouter un commentaire</label>
+                        <textarea name="content" id="comment-content" placeholder="Partagez votre opinion ou information sur ce rapport..." class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" rows="4" required></textarea>
+                        
+                        {% if user.is_staff or user.is_superuser %}
+                        <div class="flex items-center">
+                            <input type="checkbox" name="is_internal" id="is_internal" class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                            <label for="is_internal" class="ml-2 block text-sm text-gray-700">Commentaire Interne (visible seulement par le staff)</label>
+                        </div>
+                        {% endif %}
+
+                        <button type="submit" class="bg-blue-primary text-white px-6 py-2 rounded-lg hover:bg-blue-700 font-bold transition">
+                            <i class="fas fa-comment mr-2"></i> Commenter
+                        </button>
+                    </form>
+                </div>
+                {% endif %}
+
+                <div class="divide-y divide-gray-200">
+                    {% for comment in comments %}
+                    <div class="p-6 hover:bg-gray-50 transition {% if comment.is_internal %}bg-amber-50{% endif %}">
+                        <div class="flex items-start justify-between mb-3">
+                            <div>
+                                <p class="font-semibold text-gray-900">{{ comment.author.get_full_name }}</p>
+                                <p class="text-sm text-gray-500">{{ comment.created_at|date:"d M Y à H:i" }}</p>
+                            </div>
+                            {% if comment.is_internal %}
+                            <span class="text-xs bg-amber-200 text-amber-900 px-3 py-1 rounded-full font-bold">Interne (Staff)</span>
+                            {% elif comment.author.is_staff or comment.author.is_superuser %}
+                            <span class="text-xs bg-blue-200 text-blue-900 px-3 py-1 rounded-full font-bold">Agent CivicFix</span>
+                            {% endif %}
+                        </div>
+                        <p class="text-gray-700 leading-relaxed">{{ comment.content }}</p>
+                    </div>
+                    {% empty %}
+                    <div class="p-8 text-center text-gray-500">
+                        <i class="fas fa-comments text-4xl text-gray-300 mb-3"></i>
+                        <p>Aucun commentaire pour le moment. Soyez le premier à commenter!</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <div class="lg:col-span-1 space-y-6">
+            
+            <div class="bg-white rounded-xl shadow-md p-6 border border-gray-200 sticky top-24">
+                <h4 class="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
+                    <i class="fas fa-bolt text-yellow-600"></i> Interactions
+                </h4>
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <span class="text-gray-700"><i class="fas fa-comments text-gray-500 mr-2"></i> Commentaires</span>
+                        <span class="text-xl font-bold text-gray-900">{{ report.comments_count }}</span>
+                    </div>
+                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <span class="text-gray-700"><i class="fas fa-thumbs-up text-gray-500 mr-2"></i> Votes (Approbations)</span>
+                        <span class="text-xl font-bold text-gray-900">{{ report.votes_count }}</span>
+                    </div>
+                    {% if report.updated_at != report.created_at %}
+                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <span class="text-gray-700"><i class="fas fa-history text-gray-500 mr-2"></i> Dernière Mise à Jour</span>
+                        <span class="text-base font-bold text-gray-900">{{ report.updated_at|date:"d M Y" }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            {% if report.assigned_to %}
+            <div class="bg-blue-50 rounded-xl border-2 border-blue-300 p-6 shadow-md">
+                <h4 class="text-lg font-bold text-blue-900 mb-4 text-center">Assigné à</h4>
+                <div class="text-center">
+                    <div class="inline-flex items-center justify-center w-14 h-14 bg-blue-primary rounded-full text-white mb-3 shadow-lg">
+                        <i class="fas fa-user-tie text-xl"></i>
+                    </div>
+                    <p class="font-semibold text-gray-900 text-lg">{{ report.assigned_to.get_full_name }}</p>
+                    <p class="text-sm text-blue-700 mt-1 font-medium">{{ report.assigned_to.get_role_display }}</p>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20n6cT8H+yW0n2aXmFm/Jp3YVlJ7A6L2G9dC1H6UjU4I="
+        crossorigin=""></script>
+
+{% if report.latitude and report.longitude %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const lat = parseFloat('{{ report.latitude }}');
+        const lon = parseFloat('{{ report.longitude }}');
+        const locationName = '{{ report.location|escapejs }}' || 'Lieu du Rapport';
+        const zoomLevel = 16; // Zoom par défaut
+
+        // 1. Initialiser la carte
+        const map = L.map('reportMap').setView([lat, lon], zoomLevel);
+
+        // 2. Ajouter les tuiles (Tile layer) - OpenStreetMap
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        // 3. Ajouter le marqueur
+        L.marker([lat, lon]).addTo(map)
+            .bindPopup(`<b>${locationName}</b><br>Problème signalé ici.`)
+            .openPopup();
+        
+        // Fixe un bug courant de Leaflet où la carte s'affiche mal dans les conteneurs dynamiques
+        setTimeout(() => {
+            map.invalidateSize();
+        }, 500);
+    });
+</script>
+{% endif %}
+
+{% endblock %}

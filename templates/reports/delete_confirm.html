@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block title %}Confirmer Suppression - CivicFix{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto mt-12">
+    <div class="bg-red-50 border-2 border-red-300 rounded-2xl shadow-xl p-6 sm:p-10">
+        <div class="text-center mb-8">
+            <div class="inline-flex items-center justify-center w-16 h-16 bg-red-200 rounded-full mb-4 shadow-md">
+                <i class="fas fa-exclamation-triangle text-red-700 text-3xl"></i>
+            </div>
+            <h1 class="text-3xl font-extrabold text-red-900">Confirmation de Suppression</h1>
+            <p class="text-red-700 mt-2">Action **Irréversible**.</p>
+        </div>
+
+        <div class="bg-white border border-red-200 rounded-xl p-6 mb-6 shadow-sm">
+            <h3 class="font-extrabold text-gray-900 text-xl border-b pb-2 mb-3">{{ report.title }}</h3>
+            <p class="text-gray-600 mt-2">{{ report.description|truncatewords:30 }}</p>
+            
+            <div class="grid grid-cols-2 gap-3 mt-4 text-sm">
+                <p class="text-gray-700"><i class="fas fa-user-circle mr-2 text-red-400"></i> **Auteur** : {{ report.author.get_full_name }}</p>
+                <p class="text-gray-700"><i class="fas fa-calendar-alt mr-2 text-red-400"></i> **Créé le** : {{ report.created_at|date:"d M Y" }}</p>
+                <p class="text-gray-700 col-span-2">
+                    <i class="fas fa-chart-line mr-2 text-red-400"></i> **Statut Actuel** : 
+                    <span class="font-bold 
+                        {% if report.status == 'RESOLVED' %}text-green-600{% endif %}
+                        {% if report.status == 'IN_PROGRESS' %}text-blue-600{% endif %}
+                        {% if report.status == 'PENDING' %}text-yellow-600{% endif %}
+                        ">
+                        {{ report.get_status_display }}
+                    </span>
+                </p>
+            </div>
+        </div>
+
+        <div class="bg-red-100 border border-red-400 rounded-xl p-6 mb-8">
+            <p class="text-red-900 font-bold mb-3">
+                <i class="fas fa-radiation-alt mr-2"></i> CONSÉQUENCES DE LA SUPPRESSION :
+            </p>
+            <ul class="list-disc ml-5 space-y-2 text-red-800">
+                <li>Le rapport, y compris toutes les photos, sera **effacé des serveurs**.</li>
+                <li>Tous les commentaires et mises à jour de statut associés seront **perdus**.</li>
+                <li>Cette action ne peut **JAMAIS** être annulée.</li>
+            </ul>
+        </div>
+
+        <div class="mb-8 p-4 bg-red-200 rounded-lg">
+            <label class="flex items-center space-x-3 cursor-pointer">
+                <input type="checkbox" id="confirm-delete" class="h-6 w-6 text-red-600 rounded border-red-400 focus:ring-red-500">
+                <span class="text-red-900 text-base font-bold">
+                    Je comprends et confirme que je souhaite supprimer définitivement ce rapport.
+                </span>
+            </label>
+        </div>
+
+        <form method="POST" class="flex flex-col sm:flex-row gap-4">
+            {% csrf_token %}
+            
+            <button type="submit" id="delete-btn" disabled 
+                    class="flex-1 bg-red-400 text-white py-3 rounded-lg font-bold transition flex items-center justify-center gap-2 cursor-not-allowed opacity-70">
+                <i class="fas fa-trash-alt"></i> Supprimer définitivement
+            </button>
+            
+            <a href="{% url 'reports:detail' report.id %}" 
+               class="flex-1 bg-gray-200 text-gray-800 py-3 rounded-lg hover:bg-gray-300 font-bold text-center transition flex items-center justify-center gap-2">
+                <i class="fas fa-times-circle"></i> Annuler et Retourner
+            </a>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const checkbox = document.getElementById('confirm-delete');
+        const deleteBtn = document.getElementById('delete-btn');
+
+        checkbox.addEventListener('change', function() {
+            if (this.checked) {
+                // Activer le bouton de suppression
+                deleteBtn.disabled = false;
+                deleteBtn.classList.remove('bg-red-400', 'cursor-not-allowed', 'opacity-70');
+                deleteBtn.classList.add('bg-red-600', 'hover:bg-red-700');
+            } else {
+                // Désactiver le bouton de suppression
+                deleteBtn.disabled = true;
+                deleteBtn.classList.remove('bg-red-600', 'hover:bg-red-700');
+                deleteBtn.classList.add('bg-red-400', 'cursor-not-allowed', 'opacity-70');
+            }
+        });
+    });
+</script>
+{% endblock %}

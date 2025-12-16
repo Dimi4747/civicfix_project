@@ -1,0 +1,221 @@
+{% extends "base.html" %}
+
+{% block title %}Mon Profil - CivicFix{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto">
+    <div class="mb-8">
+        <h1 class="text-4xl font-bold text-gray-900 flex items-center gap-3">
+            <i class="fas fa-user-circle text-blue-primary"></i> Mon Profil
+        </h1>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="lg:col-span-1">
+            <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-8 sticky top-24">
+                <div class="text-center mb-6">
+                    {% if user.avatar %}
+                    <img src="{{ user.avatar.url }}" alt="Avatar" class="w-32 h-32 rounded-full mx-auto object-cover mb-4 border-4 border-blue-primary">
+                    {% else %}
+                    <div class="w-32 h-32 rounded-full mx-auto bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center mb-4 border-4 border-blue-primary">
+                        <i class="fas fa-user text-5xl text-blue-primary"></i>
+                    </div>
+                    {% endif %}
+                    <h2 class="text-2xl font-bold text-gray-900">{{ user.get_full_name|default:user.username }}</h2>
+                    <p class="text-gray-600 text-sm mt-1">{{ user.email }}</p>
+                    <span class="inline-block mt-3 px-4 py-1 rounded-full text-sm font-semibold bg-blue-100 text-blue-800">
+                        {{ user.get_role_display }}
+                    </span>
+                </div>
+
+                <hr class="my-6 border-gray-200">
+
+                <div class="space-y-5 text-sm mb-6">
+                    <div>
+                        <p class="text-gray-600 font-medium mb-1"><i class="fas fa-phone text-gray-400 mr-2"></i>Téléphone</p>
+                        <p class="text-gray-900 font-semibold">{{ user.phone|default:"Non spécifié" }}</p>
+                    </div>
+                    <div>
+                        <p class="text-gray-600 font-medium mb-1"><i class="fas fa-map-marker-alt text-gray-400 mr-2"></i>Département</p>
+                        <p class="text-gray-900 font-semibold">{{ profile.get_department_display|default:"Non spécifié" }}</p>
+                    </div>
+                    <div>
+                        <p class="text-gray-600 font-medium mb-1"><i class="fas fa-location-dot text-gray-400 mr-2"></i>Localisation</p>
+                        <p class="text-gray-900 font-semibold">{{ profile.location|default:"Non spécifiée" }}</p>
+                    </div>
+                    <div>
+                        <p class="text-gray-600 font-medium mb-1"><i class="fas fa-calendar-alt text-gray-400 mr-2"></i>Membre depuis</p>
+                        <p class="text-gray-900 font-semibold">{{ user.created_at|date:"d M Y" }}</p>
+                    </div>
+                </div>
+
+                <div class="space-y-3">
+                    <a href="{% url 'accounts:profile_edit' %}" class="block w-full text-center bg-blue-primary text-white py-3 rounded-lg hover:bg-blue-700 font-semibold transition flex items-center justify-center gap-2 shadow-md">
+                        <i class="fas fa-edit"></i> Modifier le profil
+                    </a>
+                    <a href="{% url 'accounts:password_change' %}" class="block w-full text-center border-2 border-blue-primary text-blue-primary py-3 rounded-lg hover:bg-blue-50 font-semibold transition flex items-center justify-center gap-2">
+                        <i class="fas fa-lock"></i> Changer le mot de passe
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="lg:col-span-2 space-y-8">
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-6 flex justify-between items-center">
+                    <div>
+                        <p class="text-gray-600 text-sm font-medium">Rapports créés</p>
+                        <p class="text-4xl font-bold text-blue-primary mt-2">{{ reports_count|default:"0" }}</p>
+                    </div>
+                    <i class="fas fa-file-alt text-blue-200 text-5xl"></i>
+                </div>
+                <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-6 flex justify-between items-center">
+                    <div>
+                        <p class="text-gray-600 text-sm font-medium">Score de réputation</p>
+                        <div class="flex items-end mt-2">
+                            <p class="text-4xl font-bold text-green-600">{{ profile.reputation_score|default:"0" }}</p>
+                            <span class="ml-2 text-gray-400 cursor-help" title="Le score de réputation augmente avec les signalements validés et les contributions constructives.">
+                                <i class="fas fa-question-circle"></i>
+                            </span>
+                        </div>
+                    </div>
+                    <i class="fas fa-medal text-yellow-500 text-5xl"></i>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-8">
+                <h3 class="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+                    <i class="fas fa-chart-pie text-blue-primary"></i> Statut de mes rapports
+                </h3>
+                <div class="h-80">
+                    <canvas id="reportsStatusChart"></canvas>
+                </div>
+                <p class="text-sm text-gray-500 mt-4 text-center">
+                    Aperçu de la résolution de vos contributions.
+                </p>
+            </div>
+            
+            <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-8">
+                <h3 class="text-2xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+                    <i class="fas fa-info-circle text-blue-primary"></i> À propos
+                </h3>
+                <p class="text-gray-700 leading-relaxed text-lg">
+                    {{ user.bio|default:"Pas de biographie renseignée. Veuillez modifier votre profil pour ajouter une description." }}
+                </p>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-8">
+                <h3 class="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+                    <i class="fas fa-bell text-blue-primary"></i> Préférences de Notifications
+                </h3>
+                <p class="text-sm text-red-500 mb-4">
+                    Pour modifier ces préférences, veuillez cliquer sur "Modifier le profil".
+                </p>
+                <div class="space-y-4">
+                    <div class="flex items-center p-4 bg-gray-50 rounded-lg">
+                        <input type="checkbox" id="email_notif" {% if profile.email_notifications %}checked{% endif %} disabled class="w-5 h-5 text-blue-primary rounded cursor-not-allowed border-gray-300">
+                        <label for="email_notif" class="ml-3 flex-1">
+                            <p class="font-medium text-gray-900">Notifications par email</p>
+                            <p class="text-sm text-gray-600">Recevez des mises à jour importantes par email</p>
+                        </label>
+                        <span class="text-sm font-semibold {% if profile.email_notifications %}text-green-600{% else %}text-gray-500{% endif %}">
+                            {% if profile.email_notifications %}Activé{% else %}Désactivé{% endif %}
+                        </span>
+                    </div>
+                    <div class="flex items-center p-4 bg-gray-50 rounded-lg">
+                        <input type="checkbox" id="push_notif" {% if profile.push_notifications %}checked{% endif %} disabled class="w-5 h-5 text-blue-primary rounded cursor-not-allowed border-gray-300">
+                        <label for="push_notif" class="ml-3 flex-1">
+                            <p class="font-medium text-gray-900">Notifications push</p>
+                            <p class="text-sm text-gray-600">Recevez des notifications en temps réel (si l'application les supporte)</p>
+                        </label>
+                        <span class="text-sm font-semibold {% if profile.push_notifications %}text-green-600{% else %}text-gray-500{% endif %}">
+                            {% if profile.push_notifications %}Activé{% else %}Désactivé{% endif %}
+                        </span>
+                    </div>
+                    <div class="flex items-center p-4 bg-gray-50 rounded-lg">
+                        <input type="checkbox" id="newsletter" {% if profile.newsletter_subscription %}checked{% endif %} disabled class="w-5 h-5 text-blue-primary rounded cursor-not-allowed border-gray-300">
+                        <label for="newsletter" class="ml-3 flex-1">
+                            <p class="font-medium text-gray-900">Abonnement à la newsletter</p>
+                            <p class="text-sm text-gray-600">Restez informé des dernières actualités</p>
+                        </label>
+                        <span class="text-sm font-semibold {% if profile.newsletter_subscription %}text-green-600{% else %}text-gray-500{% endif %}">
+                            {% if profile.newsletter_subscription %}Abonné{% else %}Non abonné{% endif %}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Ces variables devraient être passées par votre vue Django (par exemple, dans le contexte)
+    const reportsData = {
+        'en_attente': '{{ reports_pending_count|default:5 }}', // Exemple : 5 rapports en attente
+        'en_cours': '{{ reports_in_progress_count|default:8 }}', // Exemple : 8 rapports en cours
+        'resolu': '{{ reports_resolved_count|default:12 }}', // Exemple : 12 rapports résolus
+    };
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const ctx = document.getElementById('reportsStatusChart');
+        
+        if (ctx) {
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['En Attente', 'En Cours', 'Résolu'],
+                    datasets: [{
+                        data: [
+                            parseInt(reportsData.en_attente), 
+                            parseInt(reportsData.en_cours), 
+                            parseInt(reportsData.resolu)
+                        ],
+                        backgroundColor: [
+                            '#FCD34D', // Yellow-400 (En Attente)
+                            '#3B82F6', // Blue-500 (En Cours)
+                            '#10B981', // Green-500 (Résolu)
+                        ],
+                        hoverOffset: 15,
+                        borderWidth: 2,
+                        borderColor: '#ffffff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false, // Permet au graphique de s'étirer dans le conteneur h-80
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                font: {
+                                    size: 14,
+                                    weight: 'bold'
+                                },
+                                color: '#4B5563' // gray-600
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed !== null) {
+                                        label += context.parsed + ' rapports';
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

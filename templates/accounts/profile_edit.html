@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block title %}Éditer Profil - CivicFix{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto py-12">
+    <div class="bg-white rounded-3xl shadow-2xl border border-gray-100 p-8 md:p-12">
+        
+        <h1 class="text-4xl font-extrabold text-gray-900 mb-2 flex items-center gap-3 tracking-tight">
+            <i class="fas fa-user-cog text-indigo-600"></i> Modifier Mon Profil
+        </h1>
+        <p class="text-gray-600 mb-10 text-lg">Mettez à jour vos informations personnelles et vos préférences de compte.</p>
+
+        <form method="POST" enctype="multipart/form-data" class="space-y-8">
+            {% csrf_token %}
+            
+            {% for field in form %}
+                {% if field.field.widget.input_type != 'hidden' %}
+                <div class="relative">
+                    <label for="{{ field.id_for_label }}" class="block text-sm font-bold text-gray-700 mb-2">
+                        {% if field.label %}{{ field.label }}{% endif %}
+                        {% if field.field.required %}<span class="text-red-600">*</span>{% endif %}
+                    </label>
+                    
+                    {% if field.field.widget.input_type == 'textarea' %}
+                        <textarea name="{{ field.name }}" id="{{ field.id_for_label }}" rows="4" 
+                            placeholder="Entrez votre {{ field.label|lower }}"
+                            class="w-full px-5 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-4 focus:ring-indigo-100 transition duration-300 {% if field.errors %}border-red-500{% endif %}" 
+                            {% if field.field.required %}required{% endif %}>{{ field.value|default:'' }}</textarea>
+                    
+                    {% elif field.field.widget.input_type == 'checkbox' %}
+                        <div class="flex items-center mt-3">
+                            <input type="checkbox" name="{{ field.name }}" id="{{ field.id_for_label }}" 
+                                class="h-5 w-5 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500" 
+                                {% if field.value %}checked{% endif %}>
+                            <label for="{{ field.id_for_label }}" class="ml-3 text-base font-medium text-gray-700">{{ field.label }}</label>
+                        </div>
+
+                    {% elif field.field.widget.input_type == 'select' %}
+                        <select name="{{ field.name }}" id="{{ field.id_for_label }}" 
+                            class="w-full px-5 py-3 border border-gray-300 rounded-xl appearance-none focus:outline-none focus:ring-4 focus:ring-indigo-100 transition duration-300 bg-white {% if field.errors %}border-red-500{% endif %}" 
+                            {% if field.field.required %}required{% endif %}>
+                            
+                            <option value="">-- Veuillez Sélectionner --</option>
+                            {% for value, label in field.field.choices %}
+                                {% if value %}<option value="{{ value }}" {% if field.value|stringformat:'s' == value|stringformat:'s' %}selected{% endif %}>{{ label }}</option>{% endif %}
+                            {% endfor %}
+                        </select>
+                        
+                    {% else %}
+                        <input type="{{ field.field.widget.input_type }}" name="{{ field.name }}" id="{{ field.id_for_label }}" 
+                            value="{{ field.value|default:'' }}" 
+                            placeholder="Entrez votre {{ field.label|lower }}"
+                            class="w-full px-5 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-4 focus:ring-indigo-100 transition duration-300 {% if field.errors %}border-red-500{% endif %}" 
+                            {% if field.field.required %}required{% endif %}>
+                    {% endif %}
+                    
+                    {% if field.errors %}
+                        <p class="text-red-600 text-sm mt-2 font-medium flex items-center gap-1">
+                            <i class="fas fa-times-circle text-red-500"></i> {{ field.errors.0 }}
+                        </p>
+                    {% endif %}
+                    
+                    {% if field.help_text %}
+                        <p class="text-gray-500 text-xs mt-2 italic">{{ field.help_text|safe }}</p>
+                    {% endif %}
+                </div>
+                {% endif %}
+            {% endfor %}
+
+            <div class="flex flex-col sm:flex-row gap-4 pt-8 border-t border-gray-200">
+                <button type="submit" class="flex-1 bg-indigo-600 text-white py-3 rounded-xl hover:bg-indigo-700 font-bold transition duration-300 flex items-center justify-center gap-2 shadow-lg shadow-indigo-300/50 transform hover:-translate-y-0.5">
+                    <i class="fas fa-check-circle"></i> Enregistrer les modifications
+                </button>
+                <a href="{% url 'accounts:profile' %}" class="flex-1 bg-gray-200 text-gray-800 py-3 rounded-xl hover:bg-gray-300 font-semibold text-center transition duration-300 flex items-center justify-center gap-2">
+                    <i class="fas fa-times"></i> Annuler
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

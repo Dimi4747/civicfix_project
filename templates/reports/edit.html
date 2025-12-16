@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block title %}Éditer le Rapport - CivicFix{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto mt-10">
+    <div class="bg-white shadow-lg rounded-xl p-10">
+        <div class="mb-8">
+            <h1 class="text-4xl font-extrabold mb-2 text-gray-800 flex items-center gap-3">
+                <i class="fas fa-edit text-blue-600"></i> Modifier le Rapport
+            </h1>
+            <p class="text-gray-600">{{ report.title }}</p>
+        </div>
+
+        <form method="POST" enctype="multipart/form-data" class="space-y-6">
+            {% csrf_token %}
+
+            <!-- Title -->
+            <div>
+                <label for="{{ form.title.id_for_label }}" class="block font-semibold mb-2 text-gray-700">
+                    <i class="fas fa-heading mr-2 text-gray-500"></i> Titre du Rapport *
+                </label>
+                <input type="text" name="{{ form.title.name }}" id="{{ form.title.id_for_label }}" value="{{ form.title.value|default:'' }}" class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                {% if form.title.errors %}
+                <p class="text-red-600 text-sm mt-1">{{ form.title.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <!-- Description -->
+            <div>
+                <label for="{{ form.description.id_for_label }}" class="block font-semibold mb-2 text-gray-700">
+                    <i class="fas fa-align-left mr-2 text-gray-500"></i> Description *
+                </label>
+                <textarea name="{{ form.description.name }}" id="{{ form.description.id_for_label }}" class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 h-32" required>{{ form.description.value|default:'' }}</textarea>
+                {% if form.description.errors %}
+                <p class="text-red-600 text-sm mt-1">{{ form.description.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <!-- Category & Priority -->
+            <div class="grid md:grid-cols-2 gap-6">
+                <div>
+                    <label for="{{ form.category.id_for_label }}" class="block font-semibold mb-2 text-gray-700">
+                        <i class="fas fa-tag mr-2 text-gray-500"></i> Catégorie *
+                    </label>
+                    <select name="{{ form.category.name }}" id="{{ form.category.id_for_label }}" class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                        <option value="">-- Sélectionner une catégorie --</option>
+                        {% for value, label in form.category.field.choices %}
+                            {% if value %}<option value="{{ value }}" {% if form.category.value|stringformat:'s' == value|stringformat:'s' %}selected{% endif %}>{{ label }}</option>{% endif %}
+                        {% endfor %}
+                    </select>
+                    {% if form.category.errors %}
+                    <p class="text-red-600 text-sm mt-1">{{ form.category.errors.0 }}</p>
+                    {% endif %}
+                </div>
+                <div>
+                    <label for="{{ form.priority.id_for_label }}" class="block font-semibold mb-2 text-gray-700">
+                        <i class="fas fa-exclamation mr-2 text-gray-500"></i> Priorité *
+                    </label>
+                    <select name="{{ form.priority.name }}" id="{{ form.priority.id_for_label }}" class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                        <option value="">-- Sélectionner une priorité --</option>
+                        {% for value, label in form.priority.field.choices %}
+                            {% if value %}<option value="{{ value }}" {% if form.priority.value|stringformat:'s' == value|stringformat:'s' %}selected{% endif %}>{{ label }}</option>{% endif %}
+                        {% endfor %}
+                    </select>
+                    {% if form.priority.errors %}
+                    <p class="text-red-600 text-sm mt-1">{{ form.priority.errors.0 }}</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Location -->
+            <div>
+                <label for="{{ form.location.id_for_label }}" class="block font-semibold mb-2 text-gray-700">
+                    <i class="fas fa-map-marker-alt mr-2 text-gray-500"></i> Localisation
+                </label>
+                <input type="text" name="{{ form.location.name }}" id="{{ form.location.id_for_label }}" value="{{ form.location.value|default:'' }}" class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+
+            <!-- Buttons -->
+            <div class="flex gap-4 mt-8">
+                <button type="submit" class="flex-1 bg-blue-600 text-white py-3 rounded-xl font-bold hover:bg-blue-700 transition flex items-center justify-center gap-2">
+                    <i class="fas fa-save"></i> Enregistrer les modifications
+                </button>
+                <a href="{% url 'reports:detail' report.id %}" class="flex-1 bg-gray-200 text-gray-800 py-3 rounded-xl font-bold hover:bg-gray-300 text-center transition flex items-center justify-center gap-2">
+                    <i class="fas fa-times"></i> Annuler
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

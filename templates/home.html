@@ -1,0 +1,199 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Accueil - CivicFix{% endblock %}
+
+{% block content %}
+<div class="relative h-[600px] rounded-3xl overflow-hidden mb-24 shadow-2xl shadow-blue-900/20">
+    <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80');"></div>
+    <div class="absolute inset-0 bg-gradient-to-tr from-blue-900/90 via-blue-800/80 to-black/60"></div>
+
+    <div class="relative z-10 h-full flex flex-col justify-center items-center text-center px-6 max-w-5xl mx-auto">
+        <div class="animate-fade-in-up">
+            <h1 class="text-5xl md:text-7xl font-extrabold text-white mb-6 tracking-tight leading-tight">
+                Votre Ville. <span class="text-blue-300">Votre Voix.</span><br>Notre Action Commune.
+            </h1>
+            <p class="text-xl md:text-2xl text-blue-100 mb-10 max-w-3xl mx-auto font-light leading-relaxed">
+                CivicFix est la plateforme moderne pour signaler les problèmes urbains. Transformons ensemble nos quartiers en espaces plus sûrs et plus agréables.
+            </p>
+
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                {% if not user.is_authenticated %}
+                <a href="{% url 'accounts:register' %}" class="group bg-white text-blue-800 px-8 py-4 rounded-full font-bold text-lg hover:bg-blue-50 hover:scale-105 transition-all duration-300 shadow-lg flex items-center justify-center gap-3">
+                    <i class="fas fa-rocket group-hover:rotate-12 transition-transform"></i> Rejoindre le mouvement
+                </a>
+                 <a href="#features" class="group bg-transparent border-2 border-white text-white px-8 py-4 rounded-full font-semibold text-lg hover:bg-white/10 transition-all duration-300 flex items-center justify-center gap-3">
+                    En savoir plus
+                </a>
+                {% else %}
+                <a href="{% url 'reports:create' %}" class="group bg-blue-500 text-white px-8 py-4 rounded-full font-bold text-lg hover:bg-blue-400 hover:scale-105 transition-all duration-300 shadow-lg shadow-blue-500/30 flex items-center justify-center gap-3">
+                    <i class="fas fa-plus-circle text-xl group-hover:rotate-90 transition-transform"></i> Créer un rapport
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-gray-50 to-transparent"></div>
+</div>
+
+<div id="features" class="mb-32 px-4 relative">
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-blue-50/50 -z-10 rounded-[100px] blur-3xl opacity-70 pointer-events-none"></div>
+
+    <div class="text-center mb-16">
+        <h2 class="text-sm font-bold text-blue-600 uppercase tracking-wider mb-2">Pourquoi nous choisir</h2>
+        <h3 class="text-4xl md:text-5xl font-extrabold text-gray-900">L'engagement citoyen réinventé.</h3>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-10 max-w-7xl mx-auto">
+        <div class="group bg-white p-10 rounded-3xl shadow-xl shadow-gray-200/50 hover:shadow-2xl hover:shadow-blue-500/10 hover:-translate-y-2 transition-all duration-300 relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-32 h-32 bg-blue-50 rounded-bl-[100px] -z-0 group-hover:bg-blue-100 transition-colors"></div>
+            <div class="relative z-10">
+                <div class="w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-700 rounded-2xl flex items-center justify-center mb-8 shadow-lg shadow-blue-500/30 group-hover:scale-110 transition-transform">
+                    <i class="fas fa-map-marker-alt text-3xl text-white"></i>
+                </div>
+                <h4 class="text-2xl font-bold text-gray-900 mb-4">Signalement Intuitif</h4>
+                <p class="text-gray-600 leading-relaxed text-lg">Une interface fluide pour décrire les problèmes. Ajoutez photos et géolocalisation en quelques secondes.</p>
+            </div>
+        </div>
+        <div class="group bg-white p-10 rounded-3xl shadow-xl shadow-gray-200/50 hover:shadow-2xl hover:shadow-green-500/10 hover:-translate-y-2 transition-all duration-300 relative overflow-hidden">
+             <div class="absolute top-0 right-0 w-32 h-32 bg-green-50 rounded-bl-[100px] -z-0 group-hover:bg-green-100 transition-colors"></div>
+            <div class="relative z-10">
+                <div class="w-20 h-20 bg-gradient-to-br from-green-500 to-green-700 rounded-2xl flex items-center justify-center mb-8 shadow-lg shadow-green-500/30 group-hover:scale-110 transition-transform">
+                    <i class="fas fa-tasks text-3xl text-white"></i>
+                </div>
+                <h4 class="text-2xl font-bold text-gray-900 mb-4">Suivi Transparent</h4>
+                <p class="text-gray-600 leading-relaxed text-lg">Fini les boîtes noires. Suivez l'état de votre signalement de la prise en charge à la résolution.</p>
+            </div>
+        </div>
+        <div class="group bg-white p-10 rounded-3xl shadow-xl shadow-gray-200/50 hover:shadow-2xl hover:shadow-purple-500/10 hover:-translate-y-2 transition-all duration-300 relative overflow-hidden">
+             <div class="absolute top-0 right-0 w-32 h-32 bg-purple-50 rounded-bl-[100px] -z-0 group-hover:bg-purple-100 transition-colors"></div>
+            <div class="relative z-10">
+                <div class="w-20 h-20 bg-gradient-to-br from-purple-500 to-purple-700 rounded-2xl flex items-center justify-center mb-8 shadow-lg shadow-purple-500/30 group-hover:scale-110 transition-transform">
+                    <i class="fas fa-users text-3xl text-white"></i>
+                </div>
+                <h4 class="text-2xl font-bold text-gray-900 mb-4">Force Collective</h4>
+                <p class="text-gray-600 leading-relaxed text-lg">Connectez-vous avec vos voisins. Plus nous sommes nombreux, plus notre impact est grand.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="max-w-6xl mx-auto px-4 mb-32">
+    <div class="flex flex-col md:flex-row items-center justify-between mb-12 gap-6">
+        <div>
+             <h2 class="text-sm font-bold text-blue-600 uppercase tracking-wider mb-2">Activités récentes</h2>
+             <h3 class="text-3xl md:text-4xl font-extrabold text-gray-900">Derniers signalements</h3>
+        </div>
+
+        <a href="{% url 'reports:list' %}" class="group flex items-center gap-2 text-blue-700 font-bold bg-blue-50 px-6 py-3 rounded-full hover:bg-blue-100 transition-colors">
+            Voir le tableau de bord <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+        </a>
+    </div>
+
+    <div class="grid grid-cols-1 gap-6">
+        {% for report in recent_reports %}
+        <a href="{% url 'reports:detail' report.id %}" class="block bg-white rounded-2xl p-8 shadow-[0_4px_20px_-2px_rgba(0,0,0,0.05)] border border-gray-100 hover:border-blue-300 hover:shadow-[0_8px_30px_-4px_rgba(59,130,246,0.15)] hover:-translate-y-1 transition-all duration-300 relative overflow-hidden">
+            <div class="absolute left-0 top-0 bottom-0 w-2
+                {% if report.status == 'open' %}bg-red-500{% elif report.status == 'in_progress' %}bg-yellow-500{% elif report.status == 'resolved' %}bg-green-500{% else %}bg-gray-300{% endif %}">
+            </div>
+
+            <div class="pl-6 flex flex-col md:flex-row justify-between items-start gap-6">
+                <div class="flex-1">
+                    <div class="flex items-center gap-3 text-sm text-gray-500 mb-3">
+                        <span class="inline-flex items-center gap-1 bg-gray-100 text-gray-700 px-3 py-1 rounded-md text-xs font-semibold uppercase tracking-wide">
+                             <i class="fas fa-tag text-blue-500"></i> {{ report.get_category_display }}
+                        </span>
+                        <span>•</span>
+                        <span class="flex items-center gap-1"><i class="far fa-calendar-alt"></i> {{ report.created_at|date:"d M Y" }}</span>
+                    </div>
+
+                    <h4 class="text-2xl font-bold text-gray-900 mb-3 group-hover:text-blue-700 transition-colors line-clamp-1">{{ report.title }}</h4>
+                    <p class="text-gray-600 leading-relaxed line-clamp-2 mb-6">{{ report.description }}</p>
+
+                    <div class="flex items-center justify-between pt-4 border-t border-gray-100">
+                         <div class="flex items-center gap-2 text-gray-900 font-medium">
+                            <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            {{ report.author.get_full_name|default:report.author.username }}
+                         </div>
+
+                        <div class="flex items-center gap-5 text-sm text-gray-500 font-medium">
+                            <span class="flex items-center gap-1.5"><i class="far fa-eye"></i> {{ report.views_count }}</span>
+                            <span class="flex items-center gap-1.5 {% if report.comments_count > 0 %}text-blue-600{% endif %}"><i class="far fa-comment-dots"></i> {{ report.comments_count }}</span>
+                            <span class="flex items-center gap-1.5 {% if report.votes_count > 0 %}text-green-600{% endif %}"><i class="far fa-thumbs-up"></i> {{ report.votes_count }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                 <div class="flex-shrink-0">
+                     <span class="inline-flex items-center px-4 py-2 rounded-xl text-sm font-bold border
+                        {% if report.status == 'open' %}bg-red-50 text-red-700 border-red-100{% elif report.status == 'in_progress' %}bg-yellow-50 text-yellow-800 border-yellow-100{% elif report.status == 'resolved' %}bg-green-50 text-green-700 border-green-100{% else %}bg-gray-50 text-gray-700 border-gray-100{% endif %}">
+                        {% if report.status == 'resolved' %}<i class="fas fa-check-circle mr-2"></i>{% endif %}
+                        {{ report.get_status_display }}
+                    </span>
+                </div>
+            </div>
+        </a>
+        {% empty %}
+        <div class="bg-gray-50 rounded-3xl p-16 text-center border-2 border-dashed border-gray-200">
+            <div class="w-24 h-24 bg-white rounded-full flex items-center justify-center mx-auto mb-6 shadow-md text-gray-300">
+                <i class="fas fa-inbox text-5xl"></i>
+            </div>
+            <h4 class="text-2xl font-bold text-gray-700 mb-2">Tout est calme... trop calme ?</h4>
+            <p class="text-gray-500 text-lg mb-8">Aucun rapport récent. Soyez le premier à signaler un problème dans votre quartier !</p>
+            {% if user.is_authenticated %}
+            <a href="{% url 'reports:create' %}" class="inline-flex items-center gap-2 bg-blue-600 text-white px-8 py-3 rounded-full font-bold hover:bg-blue-700 transition shadow-lg shadow-blue-600/20">
+                <i class="fas fa-plus"></i> Créer le premier rapport
+            </a>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+
+    {% if recent_reports %}
+    <div class="mt-12 text-center">
+        <a href="{% url 'reports:list' %}" class="group inline-flex items-center gap-3 bg-gray-900 text-white px-10 py-4 rounded-full font-bold text-lg hover:bg-gray-800 transition-all shadow-xl hover:shadow-2xl">
+            Explorer tous les rapports <i class="fas fa-long-arrow-alt-right group-hover:translate-x-2 transition-transform"></i>
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+{% if not user.is_authenticated %}
+<div class="mb-16 px-4">
+    <div class="max-w-7xl mx-auto relative bg-gradient-to-r from-indigo-600 to-blue-600 rounded-[3rem] p-12 md:p-20 overflow-hidden shadow-2xl shadow-indigo-500/30 text-center">
+        <div class="absolute top-0 left-0 w-full h-full overflow-hidden -z-0">
+            <div class="absolute top-[-10%] left-[-10%] w-64 h-64 bg-white opacity-10 rounded-full blur-3xl"></div>
+            <div class="absolute bottom-[-20%] right-[-10%] w-96 h-96 bg-blue-400 opacity-20 rounded-full blur-3xl mix-blend-overlay"></div>
+        </div>
+
+        <div class="relative z-10 max-w-4xl mx-auto">
+            <h3 class="text-4xl md:text-6xl font-extrabold text-white mb-6 leading-tight">Prêt à faire la différence dans votre ville ?</h3>
+            <p class="text-xl text-blue-100 mb-12 leading-relaxed font-light">Rejoignez une communauté grandissante de citoyens engagés. L'inscription prend moins de 2 minutes et votre impact peut durer des années.</p>
+            <a href="{% url 'accounts:register' %}" class="inline-flex items-center gap-3 bg-white text-indigo-700 px-10 py-5 rounded-full font-extrabold text-xl hover:bg-blue-50 hover:scale-105 transition-all duration-300 shadow-xl">
+                <i class="fas fa-user-plus"></i> Créer mon compte citoyen
+            </a>
+             <p class="text-blue-200 mt-6 text-sm">Déjà membre ? <a href="{% url 'accounts:login' %}" class="underline hover:text-white">Connectez-vous ici</a>.</p>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<style>
+    .animate-fade-in-up {
+        animation: fadeInUp 0.8s ease-out;
+    }
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+{% endblock %}

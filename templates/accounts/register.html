@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+
+{% block title %}Inscription - CivicFix{% endblock %}
+
+{% block content %}
+<div class="flex min-h-[calc(100vh-4rem)] bg-white">
+
+    <div class="hidden lg:flex lg:w-1/2 relative bg-gray-900 overflow-hidden">
+        <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80');"></div>
+        <div class="absolute inset-0 bg-gradient-to-t from-blue-900/90 via-blue-800/50 to-transparent"></div>
+
+        <div class="relative z-10 w-full flex flex-col justify-end p-16 text-white">
+            <div class="mb-6">
+                <div class="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center mb-6 shadow-lg shadow-blue-500/30">
+                    <i class="fas fa-quote-left text-2xl"></i>
+                </div>
+                <h2 class="text-4xl font-bold leading-tight mb-4">"Le changement commence par un simple signalement."</h2>
+                <p class="text-blue-200 text-lg font-light">Rejoignez des milliers de citoyens qui transforment leur ville, un problème à la fois.</p>
+            </div>
+            
+            <div class="backdrop-blur-md bg-white/10 border border-white/20 rounded-2xl p-6 flex items-center gap-6">
+                <div>
+                    <span class="block text-3xl font-bold">15k+</span>
+                    <span class="text-xs text-blue-200 uppercase tracking-wider">Citoyens</span>
+                </div>
+                <div class="w-px h-10 bg-white/20"></div>
+                <div>
+                    <span class="block text-3xl font-bold">98%</span>
+                    <span class="text-xs text-blue-200 uppercase tracking-wider">Résolus</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="w-full lg:w-1/2 flex items-center justify-center p-6 md:p-12 overflow-y-auto">
+        <div class="w-full max-w-lg">
+            
+            <div class="mb-10">
+                <h1 class="text-3xl font-extrabold text-gray-900 tracking-tight mb-2">Créer votre compte citoyen</h1>
+                <p class="text-gray-500">Remplissez les informations ci-dessous pour commencer à améliorer votre quartier.</p>
+            </div>
+
+            <form method="POST" class="space-y-5">
+                {% csrf_token %}
+
+                <div>
+                    <label for="{{ form.email.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1.5">{{ form.email.label }}</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-envelope text-gray-400"></i>
+                        </div>
+                        <input type="email" name="{{ form.email.name }}" id="{{ form.email.id_for_label }}" 
+                               class="block w-full pl-10 pr-3 py-3 border-gray-200 bg-gray-50 rounded-xl text-gray-900 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 border" 
+                               placeholder="vous@exemple.com" required>
+                    </div>
+                    {% if form.email.errors %}<p class="text-red-500 text-xs mt-1 pl-1">{{ form.email.errors.0 }}</p>{% endif %}
+                </div>
+
+                <div>
+                    <label for="{{ form.username.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1.5">{{ form.username.label }}</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-at text-gray-400"></i>
+                        </div>
+                        <input type="text" name="{{ form.username.name }}" id="{{ form.username.id_for_label }}" 
+                               class="block w-full pl-10 pr-3 py-3 border-gray-200 bg-gray-50 rounded-xl text-gray-900 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 border" 
+                               placeholder="PseudoCivique" required>
+                    </div>
+                    {% if form.username.errors %}<p class="text-red-500 text-xs mt-1 pl-1">{{ form.username.errors.0 }}</p>{% endif %}
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div>
+                        <label for="{{ form.first_name.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1.5">{{ form.first_name.label }}</label>
+                        <div class="relative">
+                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="far fa-user text-gray-400"></i>
+                            </div>
+                            <input type="text" name="{{ form.first_name.name }}" id="{{ form.first_name.id_for_label }}" 
+                                   class="block w-full pl-10 pr-3 py-3 border-gray-200 bg-gray-50 rounded-xl text-gray-900 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 border" 
+                                   placeholder="Prénom">
+                        </div>
+                    </div>
+                    <div>
+                        <label for="{{ form.last_name.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1.5">{{ form.last_name.label }}</label>
+                        <div class="relative">
+                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="far fa-user text-gray-400"></i>
+                            </div>
+                            <input type="text" name="{{ form.last_name.name }}" id="{{ form.last_name.id_for_label }}" 
+                                   class="block w-full pl-10 pr-3 py-3 border-gray-200 bg-gray-50 rounded-xl text-gray-900 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 border" 
+                                   placeholder="Nom">
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <label for="{{ form.password1.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1.5">{{ form.password1.label }}</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-lock text-gray-400"></i>
+                        </div>
+                        <input type="password" name="{{ form.password1.name }}" id="{{ form.password1.id_for_label }}" 
+                               class="block w-full pl-10 pr-3 py-3 border-gray-200 bg-gray-50 rounded-xl text-gray-900 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 border" 
+                               placeholder="••••••••" required>
+                    </div>
+                    {% if form.password1.errors %}<p class="text-red-500 text-xs mt-1 pl-1">{{ form.password1.errors.0 }}</p>{% endif %}
+                </div>
+
+                <div>
+                    <label for="{{ form.password2.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1.5">{{ form.password2.label }}</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-lock text-gray-400"></i>
+                        </div>
+                        <input type="password" name="{{ form.password2.name }}" id="{{ form.password2.id_for_label }}" 
+                               class="block w-full pl-10 pr-3 py-3 border-gray-200 bg-gray-50 rounded-xl text-gray-900 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 border" 
+                               placeholder="••••••••" required>
+                    </div>
+                    {% if form.password2.errors %}<p class="text-red-500 text-xs mt-1 pl-1">{{ form.password2.errors.0 }}</p>{% endif %}
+                </div>
+
+                <div class="flex items-start pt-2">
+                    <div class="flex items-center h-5">
+                        <input type="checkbox" name="{{ form.terms.name }}" id="{{ form.terms.id_for_label }}" 
+                               class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 transition cursor-pointer" required>
+                    </div>
+                    <div class="ml-3 text-sm">
+                        <label for="{{ form.terms.id_for_label }}" class="text-gray-600">
+                            J'accepte les <a href="#" class="font-semibold text-blue-600 hover:text-blue-500 underline decoration-2 decoration-blue-100 hover:decoration-blue-500 transition-all">conditions d'utilisation</a> et la politique de confidentialité.
+                        </label>
+                    </div>
+                </div>
+                {% if form.terms.errors %}<p class="text-red-500 text-xs pl-1">{{ form.terms.errors.0 }}</p>{% endif %}
+
+                <button type="submit" class="w-full bg-blue-600 text-white py-4 rounded-xl font-bold text-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-200 transition-all duration-300 shadow-lg shadow-blue-600/30 flex items-center justify-center gap-2 transform active:scale-[0.98]">
+                    S'inscrire <i class="fas fa-arrow-right text-sm opacity-70"></i>
+                </button>
+            </form>
+
+            <div class="mt-8 text-center">
+                <p class="text-gray-600">
+                    Vous avez déjà un compte ?
+                    <a href="{% url 'accounts:login' %}" class="font-bold text-blue-600 hover:text-blue-700 transition ml-1">
+                        Se connecter
+                    </a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
