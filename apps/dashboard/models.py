@@ -4,6 +4,7 @@ Dashboard Models - Statistics & Analytics
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.utils.translation import gettext_lazy as _
+import uuid
 
 
 User = get_user_model()
@@ -108,4 +109,158 @@ class SystemNotification(models.Model):
     
     def __str__(self):
         return self.title
+
+
+class AuditLog(models.Model):
+    """Log all admin and moderator actions for security and accountability"""
+    
+    ACTION_CHOICES = (
+        # User Management
+        ('user_created', _('Utilisateur créé')),
+        ('user_modified', _('Utilisateur modifié')),
+        ('user_deleted', _('Utilisateur supprimé')),
+        ('user_activated', _('Utilisateur activé')),
+        ('user_deactivated', _('Utilisateur désactivé')),
+        ('role_changed', _('Rôle changé')),
+        ('password_reset', _('Mot de passe réinitialisé')),
+        
+        # Report Management
+        ('report_status_changed', _('Statut du rapport changé')),
+        ('report_assigned', _('Rapport assigné')),
+        ('report_deleted', _('Rapport supprimé')),
+        ('report_modified', _('Rapport modifié')),
+        ('internal_note_added', _('Note interne ajoutée')),
+        ('resolution_note_added', _('Note de résolution ajoutée')),
+        
+        # Moderation
+        ('report_reviewed', _('Rapport examiné')),
+        ('comment_approved', _('Commentaire approuvé')),
+        ('comment_rejected', _('Commentaire rejeté')),
+    )
+    
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    
+    # Actor & Action
+    actor = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='audit_logs_created')
+    action = models.CharField(max_length=50, choices=ACTION_CHOICES, db_index=True)
+    
+    # Target
+    target_user = models.ForeignKey(
+        User, 
+        on_delete=models.SET_NULL, 
+        null=True, 
+        blank=True, 
+        related_name='audit_logs_about_user'
+    )
+    target_report = models.ForeignKey(
+        'reports.Report',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='audit_logs'
+    )
+    
+    # Details
+    description = models.TextField()
+    old_value = models.TextField(blank=True, null=True, help_text="Ancienne valeur (avant changement)")
+    new_value = models.TextField(blank=True, null=True, help_text="Nouvelle valeur (après changement)")
+    
+    # Context
+    ip_address = models.GenericIPAddressField(blank=True, null=True)
+    user_agent = models.TextField(blank=True, null=True)
+    
+    # Timestamp
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
+    
+    class Meta:
+        verbose_name = _('Journal d\'audit')
+        verbose_name_plural = _('Journaux d\'audit')
+        ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['actor', '-created_at']),
+            models.Index(fields=['action', '-created_at']),
+            models.Index(fields=['target_user', '-created_at']),
+            models.Index(fields=['target_report', '-created_at']),
+        ]
+    
+    def __str__(self):
+        return f"{self.actor} - {self.get_action_display()} - {self.created_at}"
+    
+    @classmethod
+    def log_action(cls, actor, action, description, target_user=None, target_report=None, 
+                   old_value=None, new_value=None, ip_address=None, user_agent=None):
+        """Helper method to log an action"""
+        return cls.objects.create(
+            actor=actor,
+            action=action,
+            description=description,
+            target_user=target_user,
+            target_report=target_report,
+            old_value=old_value,
+            new_value=new_value,
+            ip_address=ip_address,
+            user_agent=user_agent
+        )
+
+
+class AdminNotification(models.Model):
+    """Notifications for admin and moderator actions"""
+    
+    NOTIFICATION_TYPE_CHOICES = (
+        ('report_flagged', _('Rapport signalé')),
+        ('user_suspicious', _('Activité utilisateur suspecte')),
+        ('urgent_report', _('Rapport urgent')),
+        ('system_alert', _('Alerte système')),
+        ('task_assigned', _('Tâche assignée')),
+    )
+    
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    
+    # Notification details
+    recipient = models.ForeignKey(User, on_delete=models.CASCADE, related_name='admin_notifications')
+    notification_type = models.CharField(max_length=50, choices=NOTIFICATION_TYPE_CHOICES)
+    title = models.CharField(max_length=255)
+    message = models.TextField()
+    
+    # References
+    related_report = models.ForeignKey(
+        'reports.Report',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True
+    )
+    related_user = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='admin_notifications_about'
+    )
+    
+    # Status
+    is_read = models.BooleanField(default=False)
+    is_resolved = models.BooleanField(default=False)
+    
+    # Timestamps
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
+    read_at = models.DateTimeField(blank=True, null=True)
+    
+    class Meta:
+        verbose_name = _('Notification Admin')
+        verbose_name_plural = _('Notifications Admin')
+        ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['recipient', 'is_read', '-created_at']),
+            models.Index(fields=['notification_type', '-created_at']),
+        ]
+    
+    def __str__(self):
+        return f"{self.title} ({self.get_notification_type_display()})"
+    
+    def mark_as_read(self):
+        """Mark notification as read"""
+        from django.utils import timezone
+        self.is_read = True
+        self.read_at = timezone.now()
+        self.save()
 

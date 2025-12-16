@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Modérer - {{ report.title|truncatewords:3 }}{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Header -->
+        <div class="mb-8 flex justify-between items-start">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900">📋 Modérer Rapport</h1>
+                <p class="mt-2 text-gray-600">{{ report.title }}</p>
+            </div>
+            <a href="{% url 'dashboard:moderator-queue' %}" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg">
+                ← Retour à la File
+            </a>
+        </div>
+        
+        <!-- Report Details Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+            <!-- Main Report Content -->
+            <div class="lg:col-span-2">
+                <!-- Report Card -->
+                <div class="bg-white rounded-lg shadow mb-6 p-6">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <h2 class="text-2xl font-bold text-gray-900">{{ report.title }}</h2>
+                            <p class="text-sm text-gray-600 mt-2">
+                                Créé par: {{ report.author.get_full_name|default:report.author.email }}<br>
+                                Date: {{ report.created_at|date:"d/m/Y H:i" }}
+                            </p>
+                        </div>
+                        <div class="flex space-x-2">
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium
+                                {% if report.status == 'open' %}bg-red-100 text-red-800
+                                {% elif report.status == 'in_progress' %}bg-yellow-100 text-yellow-800
+                                {% elif report.status == 'resolved' %}bg-green-100 text-green-800
+                                {% else %}bg-gray-100 text-gray-800{% endif %}">
+                                {{ report.get_status_display }}
+                            </span>
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium
+                                {% if report.priority == 'critical' %}bg-red-100 text-red-800
+                                {% elif report.priority == 'high' %}bg-orange-100 text-orange-800
+                                {% elif report.priority == 'medium' %}bg-blue-100 text-blue-800
+                                {% else %}bg-green-100 text-green-800{% endif %}">
+                                {{ report.get_priority_display }}
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="border-t border-gray-200 pt-4 mt-4">
+                        <h3 class="font-medium text-gray-900 mb-2">Description</h3>
+                        <p class="text-gray-700 whitespace-pre-wrap">{{ report.description }}</p>
+                    </div>
+                    
+                    <div class="border-t border-gray-200 pt-4 mt-4">
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                            📁 {{ report.get_category_display }}
+                        </span>
+                    </div>
+                </div>
+                
+                <!-- Comments Section -->
+                {% if comments %}
+                <div class="bg-white rounded-lg shadow p-6 mb-6">
+                    <h2 class="text-xl font-bold text-gray-900 mb-4">💬 Commentaires ({{ comments.count }})</h2>
+                    <div class="space-y-4">
+                        {% for comment in comments %}
+                        <div class="border border-gray-200 rounded-lg p-4">
+                            <div class="flex justify-between items-start mb-2">
+                                <div class="font-medium text-gray-900">{{ comment.author.get_full_name|default:comment.author.email }}</div>
+                                <span class="text-sm text-gray-500">{{ comment.created_at|date:"d/m/Y H:i" }}</span>
+                            </div>
+                            <p class="text-gray-700">{{ comment.content }}</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+                
+                <!-- Internal Notes -->
+                {% if report.internal_notes %}
+                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+                    <h3 class="font-medium text-yellow-900 mb-2">🔒 Notes Internes</h3>
+                    <div class="text-sm text-yellow-800 whitespace-pre-wrap">{{ report.internal_notes }}</div>
+                </div>
+                {% endif %}
+            </div>
+            
+            <!-- Sidebar - Moderation Form -->
+            <div class="lg:col-span-1">
+                <form method="post" class="bg-white rounded-lg shadow p-6 space-y-6 sticky top-8">
+                    {% csrf_token %}
+                    
+                    <div>
+                        <h3 class="text-lg font-bold text-gray-900 mb-4">⚙️ Modérer</h3>
+                    </div>
+                    
+                    <!-- Status Change -->
+                    <div>
+                        <label for="status" class="block text-sm font-medium text-gray-700 mb-2">Statut</label>
+                        <select 
+                            id="status" 
+                            name="status"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        >
+                            {% for value, label in STATUS_CHOICES %}
+                            <option value="{{ value }}" {% if report.status == value %}selected{% endif %}>{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <!-- Resolution Notes -->
+                    <div>
+                        <label for="resolution_notes" class="block text-sm font-medium text-gray-700 mb-2">Notes de Résolution</label>
+                        <textarea 
+                            id="resolution_notes" 
+                            name="resolution_notes"
+                            placeholder="Décrivez votre action de résolution..."
+                            rows="4"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                        ></textarea>
+                    </div>
+                    
+                    <!-- Internal Comment -->
+                    <div>
+                        <label for="internal_comment" class="block text-sm font-medium text-gray-700 mb-2">Commentaire Interne</label>
+                        <textarea 
+                            id="internal_comment" 
+                            name="internal_comment"
+                            placeholder="Remarques internes pour les autres modérateurs..."
+                            rows="3"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                        ></textarea>
+                    </div>
+                    
+                    <!-- Submit Button -->
+                    <button 
+                        type="submit" 
+                        class="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-lg font-bold"
+                    >
+                        ✓ Enregistrer la Modération
+                    </button>
+                    
+                    <!-- View Original -->
+                    <a 
+                        href="{% url 'reports:detail' report.id %}" 
+                        class="w-full block text-center bg-gray-100 hover:bg-gray-200 text-gray-900 px-4 py-2 rounded-lg font-medium"
+                    >
+                        👁️ Voir le Rapport Original
+                    </a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

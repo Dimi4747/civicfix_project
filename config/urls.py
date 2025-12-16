@@ -18,6 +18,9 @@ urlpatterns = [
     # Reports & Issues
     path('reports/', include('apps.reports.urls')),
     
+    # Interactions (Likes, Comments, Notifications)
+    path('', include('apps.reports.interactions_urls')),
+    
     # Dashboard & Analytics
     path('dashboard/', include('apps.dashboard.urls')),
     

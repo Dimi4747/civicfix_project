@@ -4,12 +4,73 @@
 {% block content %}
 <div class="max-w-7xl mx-auto px-4">
 
+    <!-- Welcome Section -->
+    <div class="mb-10 bg-gradient-to-r from-blue-50 to-indigo-50 border-l-4 border-blue-600 p-6 rounded-lg">
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-4xl font-bold text-gray-900 flex items-center gap-3 mb-2">
+                    <i class="fas fa-chart-line text-blue-600"></i>
+                    Bienvenue {{ user.first_name|default:user.email }}!
+                </h1>
+                <p class="text-gray-700">
+                    {% if user.role == 'admin' %}
+                    <i class="fas fa-crown text-yellow-500 mr-2"></i> Interface Administrateur - Gestion Complète
+                    {% elif user.role == 'moderator' %}
+                    <i class="fas fa-shield-alt text-green-500 mr-2"></i> Interface Modérateur - Gestion des Signalements
+                    {% else %}
+                    Utilisateur Regular
+                    {% endif %}
+                </p>
+            </div>
+            <div class="text-right">
+                <div class="inline-block bg-white rounded-lg p-4 shadow-sm border border-gray-200">
+                    <div class="text-3xl font-bold text-blue-600">{{ stats.total_reports }}</div>
+                    <div class="text-sm text-gray-600">Rapports Total</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Role-specific Actions -->
+    {% if user.role == 'admin' %}
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+        <a href="{% url 'dashboard:reports' %}" class="bg-white border-2 border-blue-200 rounded-lg p-6 hover:shadow-lg transition">
+            <i class="fas fa-file-alt text-blue-600 text-3xl mb-2"></i>
+            <h3 class="font-semibold text-gray-900 mb-1">Gestion Rapports</h3>
+            <p class="text-sm text-gray-600">Voir tous les signalements</p>
+        </a>
+        <a href="{% url 'dashboard:users' %}" class="bg-white border-2 border-green-200 rounded-lg p-6 hover:shadow-lg transition">
+            <i class="fas fa-users text-green-600 text-3xl mb-2"></i>
+            <h3 class="font-semibold text-gray-900 mb-1">Gestion Utilisateurs</h3>
+            <p class="text-sm text-gray-600">Gérer les utilisateurs et rôles</p>
+        </a>
+        <a href="{% url 'dashboard:statistics' %}" class="bg-white border-2 border-purple-200 rounded-lg p-6 hover:shadow-lg transition">
+            <i class="fas fa-chart-bar text-purple-600 text-3xl mb-2"></i>
+            <h3 class="font-semibold text-gray-900 mb-1">Statistiques</h3>
+            <p class="text-sm text-gray-600">Analyser les données</p>
+        </a>
+    </div>
+    {% elif user.role == 'moderator' %}
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+        <a href="{% url 'dashboard:reports' %}" class="bg-white border-2 border-blue-200 rounded-lg p-6 hover:shadow-lg transition">
+            <i class="fas fa-file-alt text-blue-600 text-3xl mb-2"></i>
+            <h3 class="font-semibold text-gray-900 mb-1">Modérer les Signalements</h3>
+            <p class="text-sm text-gray-600">Examiner et traiter les rapports</p>
+        </a>
+        <a href="{% url 'dashboard:activity' %}" class="bg-white border-2 border-green-200 rounded-lg p-6 hover:shadow-lg transition">
+            <i class="fas fa-history text-green-600 text-3xl mb-2"></i>
+            <h3 class="font-semibold text-gray-900 mb-1">Historique d'Activité</h3>
+            <p class="text-sm text-gray-600">Voir les actions récentes</p>
+        </a>
+    </div>
+    {% endif %}
+
     <!-- Header -->
     <div class="mb-10">
-        <h1 class="text-4xl font-bold text-gray-900 flex items-center gap-3">
-            <i class="fas fa-chart-line text-blue-600"></i>
+        <h2 class="text-2xl font-bold text-gray-900 flex items-center gap-3">
+            <i class="fas fa-tachometer-alt text-blue-600"></i>
             Tableau de Bord
-        </h1>
+        </h2>
         <p class="text-gray-600 mt-2">
             Aperçu global de votre plateforme CivicFix
         </p>

@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Notifications Admin/Modérateur{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Header -->
+        <div class="mb-8 flex justify-between items-center">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900">🔔 Notifications</h1>
+                <p class="mt-2 text-gray-600">
+                    {% if unread_count > 0 %}
+                    {{ unread_count }} notification{% if unread_count > 1 %}s{% endif %} non lue{% if unread_count > 1 %}s{% endif %}
+                    {% else %}
+                    Aucune notification non lue
+                    {% endif %}
+                </p>
+            </div>
+            {% if unread_count > 0 %}
+            <a href="?mark_read=all" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">
+                ✓ Tout marquer comme lu
+            </a>
+            {% endif %}
+        </div>
+        
+        <!-- Notifications List -->
+        {% if notifications %}
+        <div class="space-y-4">
+            {% for notification in notifications %}
+            <div class="bg-white rounded-lg shadow p-6 {% if not notification.is_read %}border-l-4 border-blue-500{% endif %} hover:shadow-md transition">
+                <div class="flex justify-between items-start">
+                    <div class="flex-1">
+                        <div class="flex items-center space-x-3 mb-2">
+                            <h2 class="text-lg font-bold text-gray-900">{{ notification.title }}</h2>
+                            {% if not notification.is_read %}
+                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-bold bg-blue-100 text-blue-800">
+                                NOUVEAU
+                            </span>
+                            {% endif %}
+                            {% if notification.is_resolved %}
+                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-bold bg-green-100 text-green-800">
+                                RÉSOLU
+                            </span>
+                            {% endif %}
+                        </div>
+                        
+                        <p class="text-gray-600 mt-2">{{ notification.message }}</p>
+                        
+                        <!-- Links -->
+                        <div class="mt-3 flex space-x-3">
+                            {% if notification.related_report %}
+                            <a href="{% url 'reports:detail' notification.related_report.id %}" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                                📋 Voir le rapport
+                            </a>
+                            {% endif %}
+                            {% if notification.related_user %}
+                            <a href="{% url 'dashboard:user-detail' notification.related_user.id %}" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                                👤 Voir l'utilisateur
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="text-right ml-4">
+                        <div class="text-sm text-gray-500">{{ notification.created_at|date:"d/m/Y H:i" }}</div>
+                        <div class="text-xs text-gray-400 mt-1">
+                            {% if notification.notification_type == 'report_flagged' %}
+                            🚩 Rapport Signalé
+                            {% elif notification.notification_type == 'user_suspicious' %}
+                            ⚠️ Activité Suspecte
+                            {% elif notification.notification_type == 'urgent_report' %}
+                            🔴 Rapport Urgent
+                            {% elif notification.notification_type == 'system_alert' %}
+                            🛑 Alerte Système
+                            {% elif notification.notification_type == 'task_assigned' %}
+                            ✓ Tâche Assignée
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Pagination -->
+        {% if paginator.num_pages > 1 %}
+        <div class="mt-8 flex justify-center">
+            <nav class="flex space-x-2">
+                {% if notifications.has_previous %}
+                <a href="?page=1" class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
+                    ◀◀ Première
+                </a>
+                <a href="?page={{ notifications.previous_page_number }}" class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
+                    ◀ Précédente
+                </a>
+                {% endif %}
+                
+                <span class="px-4 py-2">
+                    Page {{ notifications.number }} sur {{ paginator.num_pages }}
+                </span>
+                
+                {% if notifications.has_next %}
+                <a href="?page={{ notifications.next_page_number }}" class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
+                    Suivante ▶
+                </a>
+                <a href="?page={{ paginator.num_pages }}" class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
+                    Dernière ▶▶
+                </a>
+                {% endif %}
+            </nav>
+        </div>
+        {% endif %}
+        
+        {% else %}
+        <div class="bg-white rounded-lg shadow p-8 text-center">
+            <div class="text-gray-500 text-lg">✓ Aucune notification pour le moment</div>
+            <p class="text-gray-400 mt-2">Vous verrez ici les notifications importantes concernant vos tâches de modération</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

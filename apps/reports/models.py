@@ -211,3 +211,35 @@ class ReportVote(models.Model):
     def __str__(self):
         return f"{self.user.email} - {self.report.title}"
 
+
+class Like(models.Model):
+    """Système de Like pour les rapports (style réseaux sociaux)"""
+    
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    report = models.ForeignKey(Report, on_delete=models.CASCADE, related_name='likes')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='likes')
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
+    
+    class Meta:
+        verbose_name = _('Like')
+        verbose_name_plural = _('Likes')
+        unique_together = ('report', 'user')
+        ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['report', '-created_at']),
+            models.Index(fields=['user', '-created_at']),
+        ]
+    
+    def __str__(self):
+        return f"{self.user.email} ❤️ {self.report.title}"
+    
+    @staticmethod
+    def toggle_like(report, user):
+        """Toggle like et retourner (liked, like_object)"""
+        like, created = Like.objects.get_or_create(report=report, user=user)
+        
+        if not created:
+            like.delete()
+            return False, None
+        
+        return True, like

@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Journal d'Audit{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Header -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-gray-900">📝 Journal d'Audit</h1>
+            <p class="mt-2 text-gray-600">Historique complet de toutes les actions des administrateurs et modérateurs</p>
+        </div>
+        
+        <!-- Filters -->
+        <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+            <form method="get" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <!-- Action Filter -->
+                <select name="action" class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="">Toutes les actions</option>
+                    {% for value, label in ACTION_CHOICES %}
+                    <option value="{{ value }}" {% if action == value %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+                
+                <!-- Actor Filter -->
+                <select name="actor_id" class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="">Tous les utilisateurs</option>
+                    {% for admin in admins %}
+                    <option value="{{ admin.id }}" {% if actor_id == admin.id|stringformat:"s" %}selected{% endif %}>
+                        {{ admin.get_full_name|default:admin.email }}
+                    </option>
+                    {% endfor %}
+                </select>
+                
+                <!-- Date Filter -->
+                <input 
+                    type="date" 
+                    name="date_from" 
+                    value="{{ date_from }}"
+                    class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">
+                    🔍 Filtrer
+                </button>
+            </form>
+        </div>
+        
+        <!-- Audit Logs Table -->
+        <div class="bg-white rounded-lg shadow overflow-hidden">
+            <table class="min-w-full">
+                <thead class="bg-gray-100 border-b border-gray-300">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Date & Heure</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Acteur</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Action</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Cible</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Description</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Changements</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200">
+                    {% for log in logs %}
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                            {{ log.created_at|date:"d/m/Y H:i" }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <a href="{% url 'dashboard:user-detail' log.actor.id %}" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                                {{ log.actor.get_full_name|default:log.actor.email }}
+                            </a>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                {{ log.get_action_display }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm">
+                            {% if log.target_user %}
+                            <a href="{% url 'dashboard:user-detail' log.target_user.id %}" class="text-blue-600 hover:text-blue-800">
+                                👤 {{ log.target_user.email }}
+                            </a>
+                            {% elif log.target_report %}
+                            <a href="{% url 'reports:detail' log.target_report.id %}" class="text-blue-600 hover:text-blue-800">
+                                📋 {{ log.target_report.title|truncatewords:3 }}
+                            </a>
+                            {% else %}
+                            <span class="text-gray-500">—</span>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4 text-sm text-gray-700 max-w-xs truncate">
+                            {{ log.description }}
+                        </td>
+                        <td class="px-6 py-4 text-sm">
+                            {% if log.old_value or log.new_value %}
+                            <details class="cursor-pointer">
+                                <summary class="text-blue-600 hover:text-blue-800">📊 Voir</summary>
+                                <div class="mt-2 text-xs bg-gray-50 p-2 rounded border border-gray-200">
+                                    {% if log.old_value %}<div class="text-red-600"><strong>Avant:</strong> {{ log.old_value|truncatewords:10 }}</div>{% endif %}
+                                    {% if log.new_value %}<div class="text-green-600"><strong>Après:</strong> {{ log.new_value|truncatewords:10 }}</div>{% endif %}
+                                </div>
+                            </details>
+                            {% else %}
+                            <span class="text-gray-500">—</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="px-6 py-4 text-center text-gray-500">
+                            Aucun journal d'audit trouvé
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Pagination -->
+        {% if paginator.num_pages > 1 %}
+        <div class="mt-6 flex justify-center">
+            <nav class="flex space-x-2">
+                {% if logs.has_previous %}
+                <a href="?page=1{% if action %}&action={{ action }}{% endif %}{% if actor_id %}&actor_id={{ actor_id }}{% endif %}{% if date_from %}&date_from={{ date_from }}{% endif %}" class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
+                    ◀◀ Première
+                </a>
+                <a href="?page={{ logs.previous_page_number }}{% if action %}&action={{ action }}{% endif %}{% if actor_id %}&actor_id={{ actor_id }}{% endif %}{% if date_from %}&date_from={{ date_from }}{% endif %}" class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
+                    ◀ Précédente
+                </a>
+                {% endif %}
+                
+                <span class="px-4 py-2">
+                    Page {{ logs.number }} sur {{ paginator.num_pages }}
+                </span>
+                
+                {% if logs.has_next %}
+                <a href="?page={{ logs.next_page_number }}{% if action %}&action={{ action }}{% endif %}{% if actor_id %}&actor_id={{ actor_id }}{% endif %}{% if date_from %}&date_from={{ date_from }}{% endif %}" class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
+                    Suivante ▶
+                </a>
+                <a href="?page={{ paginator.num_pages }}{% if action %}&action={{ action }}{% endif %}{% if actor_id %}&actor_id={{ actor_id }}{% endif %}{% if date_from %}&date_from={{ date_from }}{% endif %}" class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
+                    Dernière ▶▶
+                </a>
+                {% endif %}
+            </nav>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

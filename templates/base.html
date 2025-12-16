@@ -89,10 +89,54 @@
                             </button>
                             
                             <div id="user-menu-items" class="hidden absolute right-0 mt-3 w-56 bg-white rounded-xl shadow-2xl ring-1 ring-black ring-opacity-5 py-2 origin-top-right animate-fade-in-down" role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button" tabindex="-1">
-                                <div class="px-4 py-2 border-b border-gray-100">
+                                <div class="px-4 py-3 border-b border-gray-100">
                                     <p class="text-sm font-semibold text-gray-900">{{ user.get_full_name|default:user.username }}</p>
-                                    <p class="text-xs text-gray-500 truncate">{{ user.email }}</p>
+                                    <p class="text-xs text-gray-500 truncate mb-2">{{ user.email }}</p>
+                                    <div class="flex gap-2">
+                                        {% if user.role == 'admin' %}
+                                        <span class="inline-block px-2 py-1 text-xs font-bold rounded-full bg-yellow-100 text-yellow-800">
+                                            <i class="fas fa-crown mr-1"></i> Administrateur
+                                        </span>
+                                        {% elif user.role == 'moderator' %}
+                                        <span class="inline-block px-2 py-1 text-xs font-bold rounded-full bg-green-100 text-green-800">
+                                            <i class="fas fa-shield-alt mr-1"></i> Modérateur
+                                        </span>
+                                        {% else %}
+                                        <span class="inline-block px-2 py-1 text-xs font-bold rounded-full bg-blue-100 text-blue-800">
+                                            <i class="fas fa-user mr-1"></i> Utilisateur
+                                        </span>
+                                        {% endif %}
+                                    </div>
                                 </div>
+
+                                {% if user.role in 'admin,moderator' %}
+                                <a href="{% url 'dashboard:index' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 transition-colors" role="menuitem" tabindex="-1">
+                                    <i class="fas fa-chart-line mr-3 w-4"></i> Tableau de Bord
+                                </a>
+                                {% if user.role == 'moderator' %}
+                                <a href="{% url 'dashboard:moderator-queue' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 transition-colors" role="menuitem" tabindex="-1">
+                                    <i class="fas fa-tasks mr-3 w-4"></i> Ma File
+                                </a>
+                                {% endif %}
+                                {% if user.role == 'admin' %}
+                                <a href="{% url 'dashboard:users-list' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 transition-colors" role="menuitem" tabindex="-1">
+                                    <i class="fas fa-users-cog mr-3 w-4"></i> Gestion Utilisateurs
+                                </a>
+                                <a href="{% url 'dashboard:reports-admin' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 transition-colors" role="menuitem" tabindex="-1">
+                                    <i class="fas fa-file-alt mr-3 w-4"></i> Gestion Rapports
+                                </a>
+                                <a href="{% url 'dashboard:audit-log' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 transition-colors" role="menuitem" tabindex="-1">
+                                    <i class="fas fa-list mr-3 w-4"></i> Journal d'Audit
+                                </a>
+                                <a href="{% url 'dashboard:statistics' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 transition-colors" role="menuitem" tabindex="-1">
+                                    <i class="fas fa-chart-bar mr-3 w-4"></i> Statistiques
+                                </a>
+                                {% endif %}
+                                <a href="{% url 'dashboard:admin-notifications' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 transition-colors" role="menuitem" tabindex="-1">
+                                    <i class="fas fa-bell mr-3 w-4"></i> Notifications
+                                </a>
+                                <hr class="my-1 border-gray-100">
+                                {% endif %}
 
                                 <a href="{% url 'accounts:profile' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 transition-colors" role="menuitem" tabindex="-1">
                                     <i class="fas fa-user-circle mr-3 w-4"></i> Mon Profil

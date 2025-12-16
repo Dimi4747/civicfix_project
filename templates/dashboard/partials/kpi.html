@@ -1,0 +1,71 @@
+<!-- KPI Cards - Dashboard Metrics -->
+
+<!-- Total Reports -->
+<div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition">
+    <div class="flex items-start justify-between">
+        <div>
+            <p class="text-sm text-gray-600 font-medium">Rapports Total</p>
+            <p class="text-3xl font-bold text-gray-900 mt-2">{{ stats.total_reports }}</p>
+            <p class="text-xs text-gray-500 mt-1">
+                <i class="fas fa-arrow-up text-green-600 mr-1"></i>
+                {{ stats.reports_created_today }} aujourd'hui
+            </p>
+        </div>
+        <div class="bg-blue-100 rounded-full p-3">
+            <i class="fas fa-file-alt text-blue-600 text-2xl"></i>
+        </div>
+    </div>
+</div>
+
+<!-- Open Reports -->
+<div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition">
+    <div class="flex items-start justify-between">
+        <div>
+            <p class="text-sm text-gray-600 font-medium">Rapports Ouverts</p>
+            <p class="text-3xl font-bold text-red-600 mt-2">{{ stats.open_reports }}</p>
+            <p class="text-xs text-gray-500 mt-1">
+                <span class="inline-block px-2 py-0.5 bg-red-100 text-red-700 rounded-full text-xs font-semibold">
+                    À traiter
+                </span>
+            </p>
+        </div>
+        <div class="bg-red-100 rounded-full p-3">
+            <i class="fas fa-exclamation-circle text-red-600 text-2xl"></i>
+        </div>
+    </div>
+</div>
+
+<!-- In Progress Reports -->
+<div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition">
+    <div class="flex items-start justify-between">
+        <div>
+            <p class="text-sm text-gray-600 font-medium">En Cours</p>
+            <p class="text-3xl font-bold text-amber-600 mt-2">{{ stats.in_progress_reports }}</p>
+            <p class="text-xs text-gray-500 mt-1">
+                <span class="inline-block px-2 py-0.5 bg-amber-100 text-amber-700 rounded-full text-xs font-semibold">
+                    En traitement
+                </span>
+            </p>
+        </div>
+        <div class="bg-amber-100 rounded-full p-3">
+            <i class="fas fa-spinner text-amber-600 text-2xl"></i>
+        </div>
+    </div>
+</div>
+
+<!-- Resolved Reports -->
+<div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition">
+    <div class="flex items-start justify-between">
+        <div>
+            <p class="text-sm text-gray-600 font-medium">Résolus</p>
+            <p class="text-3xl font-bold text-green-600 mt-2">{{ stats.resolved_reports }}</p>
+            <p class="text-xs text-gray-500 mt-1">
+                <i class="fas fa-check-circle text-green-600 mr-1"></i>
+                {{ stats.reports_resolved_today }} aujourd'hui
+            </p>
+        </div>
+        <div class="bg-green-100 rounded-full p-3">
+            <i class="fas fa-check-circle text-green-600 text-2xl"></i>
+        </div>
+    </div>
+</div>

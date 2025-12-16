@@ -11,13 +11,13 @@ from django.http import JsonResponse
 from rest_framework import generics, status, permissions
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework_simplejwt.tokens import RefreshToken
+# from rest_framework_simplejwt.tokens import RefreshToken  # Disabled temporarily
 from django.contrib.auth import get_user_model
 from datetime import timedelta
 from django.utils import timezone
 
 from .forms import (
-    UserRegistrationForm, UserLoginForm, UserProfileForm, 
+    UserRegistrationForm, UserLoginForm, UserProfileForm,
     CustomPasswordChangeForm
 )
 from .models import UserProfile, LoginHistory
@@ -91,8 +91,15 @@ def login_view(request):
                     request.session.set_expiry(timedelta(weeks=2))
                 
                 messages.success(request, f"Bienvenue {user.first_name}!")
-                next_url = request.GET.get('next', 'home')
-                return redirect(next_url)
+                
+                # Redirection basée sur le rôle
+                if user.role == 'admin':
+                    return redirect('dashboard:index')
+                elif user.role == 'moderator':
+                    return redirect('dashboard:index')
+                else:
+                    next_url = request.GET.get('next', 'home')
+                    return redirect(next_url)
             else:
                 user_obj = User.objects.filter(email=email).first()
                 if user_obj:

@@ -49,7 +49,7 @@ class User(AbstractUser):
     username = models.CharField(max_length=150, unique=True)
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='user')
     phone = models.CharField(max_length=20, blank=True, null=True)
-    avatar = models.ImageField(upload_to='avatars/%Y/%m/', blank=True, null=True)
+    # avatar = models.ImageField(upload_to='avatars/%Y/%m/', blank=True, null=True)  # Disabled
     bio = models.TextField(blank=True, null=True, max_length=500)
     is_verified = models.BooleanField(default=False)
     last_login_ip = models.GenericIPAddressField(blank=True, null=True)
@@ -157,4 +157,62 @@ class LoginHistory(models.Model):
     
     def __str__(self):
         return f"{self.user.email} - {self.timestamp}"
+
+
+class Notification(models.Model):
+    """Système de notifications pour les utilisateurs"""
+    
+    NOTIFICATION_TYPES = (
+        ('like', '❤️ Rapport Aimé'),
+        ('comment', '💬 Commentaire'),
+        ('status_change', '🔄 Changement Statut'),
+        ('assigned', '⚠️ Rapport Assigné'),
+        ('resolved', '✅ Rapport Résolu'),
+        ('new_report', '📢 Nouveau Rapport'),
+        ('admin_action', '🛠️ Action Admin'),
+    )
+    
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    recipient = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_notifications')
+    actor = models.ForeignKey(User, on_delete=models.CASCADE, related_name='actor_notifications')
+    notification_type = models.CharField(max_length=20, choices=NOTIFICATION_TYPES)
+    report = models.ForeignKey('reports.Report', on_delete=models.CASCADE, null=True, blank=True, related_name='report_notifications')
+    content = models.TextField()
+    is_read = models.BooleanField(default=False, db_index=True)
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
+    read_at = models.DateTimeField(null=True, blank=True)
+    
+    class Meta:
+        verbose_name = _('Notification')
+        verbose_name_plural = _('Notifications')
+        ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['recipient', '-created_at']),
+            models.Index(fields=['recipient', 'is_read', '-created_at']),
+        ]
+    
+    def __str__(self):
+        return f"{self.get_notification_type_display()} → {self.recipient.email}"
+    
+    def mark_as_read(self):
+        """Marquer la notification comme lue"""
+        if not self.is_read:
+            from django.utils import timezone
+            self.is_read = True
+            self.read_at = timezone.now()
+            self.save()
+    
+    @staticmethod
+    def create_notification(recipient, actor, notification_type, content, report=None):
+        """Créer une notification de manière sécurisée"""
+        if recipient != actor:  # Pas auto-notification
+            return Notification.objects.create(
+                recipient=recipient,
+                actor=actor,
+                notification_type=notification_type,
+                content=content,
+                report=report
+            )
+        return None
+
 

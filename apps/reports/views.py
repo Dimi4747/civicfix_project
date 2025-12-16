@@ -11,17 +11,16 @@ from django.core.paginator import Paginator
 from rest_framework import generics, status, permissions
 from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser, FormParser
-from reportlab.lib.pagesizes import letter
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image, PageBreak
-from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-from reportlab.lib.units import inch
+# from reportlab.lib.pagesizes import letter  # Temporarily disabled
+# from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image, PageBreak
+# from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+# from reportlab.lib.units import inch
 from django.contrib.auth import get_user_model
 from datetime import datetime
 import io
 
 from .models import Report, ReportComment, ReportAttachment, ReportHistory, ReportVote
 from .forms import ReportForm, ReportCommentForm, ReportFilterForm, ReportStatusUpdateForm
-
 
 User = get_user_model()
 

@@ -2,7 +2,7 @@
 Dashboard Views - Admin & Statistics
 """
 from django.shortcuts import render
-from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
 from django.http import JsonResponse
 from django.db.models import Count, Q
@@ -13,21 +13,15 @@ from django.utils import timezone
 import json
 
 from apps.reports.models import Report, ReportComment, ReportHistory
+from apps.accounts.decorators import admin_or_moderator_required
 from .models import DashboardStats, UserActivityLog, SystemNotification
 
 
 User = get_user_model()
 
 
-def admin_required(user):
-    """Check if user is admin"""
-    return user.is_authenticated and user.is_admin()
-
-
-# ======================== Web Views ========================
-
 @login_required
-@user_passes_test(admin_required)
+@admin_or_moderator_required
 def dashboard_view(request):
     """Main dashboard view with key metrics"""
     # Get stats for the current date
@@ -84,7 +78,7 @@ def dashboard_view(request):
 
 
 @login_required
-@user_passes_test(admin_required)
+@admin_or_moderator_required
 def reports_dashboard_view(request):
     """Reports management dashboard"""
     reports = Report.objects.select_related('author', 'assigned_to').all()
@@ -114,7 +108,7 @@ def reports_dashboard_view(request):
 
 
 @login_required
-@user_passes_test(admin_required)
+@admin_or_moderator_required
 def users_dashboard_view(request):
     """Users management dashboard"""
     users = User.objects.all().order_by('-created_at')
@@ -138,7 +132,7 @@ def users_dashboard_view(request):
 
 
 @login_required
-@user_passes_test(admin_required)
+@admin_or_moderator_required
 def statistics_view(request):
     """Advanced statistics and analytics"""
     # Get last 30 days of stats
@@ -193,7 +187,7 @@ def statistics_view(request):
 
 
 @login_required
-@user_passes_test(admin_required)
+@admin_or_moderator_required
 def activity_log_view(request):
     """View user activity logs"""
     activities = UserActivityLog.objects.select_related('user').order_by('-timestamp')[:100]
@@ -212,7 +206,7 @@ def activity_log_view(request):
 
 
 @login_required
-@user_passes_test(admin_required)
+@admin_or_moderator_required
 def notifications_view(request):
     """System notifications management"""
     notifications = SystemNotification.objects.filter(is_active=True).order_by('-created_at')
