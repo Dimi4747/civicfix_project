@@ -1,18 +1,18 @@
 """
 WSGI config for CivicFix project - Passenger Deployment
-This file is used by Passenger to serve the Django application
+Configuration pour nyem.cdwfs.net
 """
 
 import os
 import sys
 
-# Ajouter le répertoire du projet au path Python
-INTERP = os.path.expanduser("~/virtualenv/civicfix_project/3.11/bin/python3")
+# Chemin vers l'interpréteur Python de l'environnement virtuel
+INTERP = os.path.expanduser("~/nyem/venv/bin/python3")
 if sys.executable != INTERP:
     os.execl(INTERP, INTERP, *sys.argv)
 
-# Ajouter le chemin du projet
-sys.path.insert(0, os.path.dirname(__file__))
+# Ajouter le chemin du projet au Python path
+sys.path.insert(0, os.path.expanduser('~/nyem'))
 
 # Définir le module de settings Django
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')

@@ -1,0 +1,89 @@
+=================================================================
+COMMANDES DE DÉPLOIEMENT - CivicFix sur nyem.cdwfs.net
+BD: civicfix / User: cdiu8226_nyemb / Pass: DIMitr02
+Copiez-collez ces commandes une par une dans le terminal o2switch
+=================================================================
+
+# ÉTAPE 1 : Aller dans le dossier et cloner le projet
+cd ~
+mkdir -p nyem
+cd nyem
+git clone https://github.com/Dimi4747/civicfix_project.git .
+
+# ÉTAPE 2 : Créer l'environnement virtuel
+python3 -m venv venv
+source venv/bin/activate
+pip install --upgrade pip
+
+# ÉTAPE 3 : Installer les dépendances
+pip install -r requirements.txt
+
+# ÉTAPE 4 : Copier le fichier .env
+cp .env.production .env
+
+# ÉTAPE 5 : Générer une SECRET_KEY (copiez le résultat)
+python3 -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"
+
+# ÉTAPE 6 : Éditer le fichier .env (remplacez SECRET_KEY par celle générée)
+nano .env
+# Appuyez sur Ctrl+X, puis Y, puis Entrée pour sauvegarder
+
+# ÉTAPE 7 : Créer les dossiers nécessaires
+mkdir -p logs tmp media staticfiles
+
+# ÉTAPE 8 : Appliquer les migrations
+python manage.py migrate
+
+# ÉTAPE 9 : Créer un superutilisateur
+python manage.py createsuperuser
+
+# ÉTAPE 10 : Collecter les fichiers statiques
+python manage.py collectstatic --noinput
+
+# ÉTAPE 11 : Définir les permissions
+chmod 755 ~/nyem
+chmod 644 ~/nyem/passenger_wsgi.py
+chmod 644 ~/nyem/.htaccess
+chmod -R 755 ~/nyem/media
+chmod -R 755 ~/nyem/staticfiles
+chmod -R 755 ~/nyem/logs
+chmod -R 755 ~/nyem/tmp
+
+# ÉTAPE 12 : Vérifier la configuration
+python manage.py check --deploy
+
+# ÉTAPE 13 : Redémarrer l'application
+touch ~/nyem/tmp/restart.txt
+
+=================================================================
+TERMINÉ ! Testez votre site sur : https://nyem.cdwfs.net
+=================================================================
+
+# COMMANDES UTILES APRÈS LE DÉPLOIEMENT
+
+# Voir les logs en temps réel
+tail -f ~/nyem/logs/django.log
+
+# Voir les erreurs Apache
+tail -f ~/logs/error_log
+
+# Redémarrer l'application
+touch ~/nyem/tmp/restart.txt
+
+# Mettre à jour depuis GitHub
+cd ~/nyem
+git pull origin main
+source venv/bin/activate
+pip install -r requirements.txt
+python manage.py migrate
+python manage.py collectstatic --noinput
+touch tmp/restart.txt
+
+# Sauvegarder la base de données
+mysqldump -u cdiu8226_nyem -p civicfix > backup_$(date +%Y%m%d).sql
+
+# Tester la connexion à la base de données
+mysql -u cdiu8226_nyem -p
+# Mot de passe : ngokeng1@
+
+=================================================================

@@ -1,7 +1,8 @@
 # Configuration Apache pour Django avec Passenger
+# Sous-domaine: nyem.cdwfs.net
 PassengerEnabled On
-PassengerAppRoot /home/username/civicfix_project
-PassengerPython /home/username/virtualenv/civicfix_project/3.11/bin/python3
+PassengerAppRoot /home/cdiu8226/nyem
+PassengerPython /home/cdiu8226/nyem/venv/bin/python3
 PassengerAppType wsgi
 PassengerStartupFile passenger_wsgi.py
 
@@ -13,16 +14,16 @@ RewriteRule ^(.*)$ passenger_wsgi.py [QSA,L]
 
 # Servir les fichiers statiques directement
 <IfModule mod_alias.c>
-    Alias /static /home/username/civicfix_project/staticfiles
-    Alias /media /home/username/civicfix_project/media
+    Alias /static /home/cdiu8226/nyem/staticfiles
+    Alias /media /home/cdiu8226/nyem/media
 </IfModule>
 
 # Permissions pour les fichiers statiques
-<Directory /home/username/civicfix_project/staticfiles>
+<Directory /home/cdiu8226/nyem/staticfiles>
     Require all granted
 </Directory>
 
-<Directory /home/username/civicfix_project/media>
+<Directory /home/cdiu8226/nyem/media>
     Require all granted
 </Directory>
 
