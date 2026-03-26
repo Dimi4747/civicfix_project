@@ -80,10 +80,10 @@ python manage.py collectstatic --noinput
 touch tmp/restart.txt
 
 # Sauvegarder la base de données
-mysqldump -u cdiu8226_nyem -p civicfix > backup_$(date +%Y%m%d).sql
+mysqldump -u cdiu8226_nyemb -p civicfix > backup_$(date +%Y%m%d).sql
 
 # Tester la connexion à la base de données
-mysql -u cdiu8226_nyem -p
-# Mot de passe : ngokeng1@
+mysql -u cdiu8226_nyemb -p
+# Mot de passe : DIMitr02
 
 =================================================================
