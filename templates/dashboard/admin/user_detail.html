@@ -29,11 +29,11 @@
                 <div class="text-gray-600 text-sm">Rôle</div>
                 <div class="text-2xl font-bold mt-2">
                     {% if user.role == 'admin' %}
-                    👑 Admin
+                    <i class="fas fa-crown"></i> Admin
                     {% elif user.role == 'moderator' %}
-                    🛡️ Modérateur
+                    <i class="fas fa-shield-alt"></i> Modérateur
                     {% else %}
-                    👤 Utilisateur
+                    <i class="fas fa-user"></i> Utilisateur
                     {% endif %}
                 </div>
             </div>
@@ -226,7 +226,7 @@
         {% if audit_logs %}
         <div class="bg-white rounded-lg shadow">
             <div class="px-6 py-4 border-b border-gray-200">
-                <h2 class="text-xl font-bold text-gray-900">📝 Journal d'Audit</h2>
+                <h2 class="text-xl font-bold text-gray-900"><i class="fas fa-clipboard-list"></i> Journal d'Audit</h2>
             </div>
             <div class="px-6 py-4">
                 <div class="space-y-3">

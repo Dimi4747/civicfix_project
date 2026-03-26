@@ -272,51 +272,66 @@ def export_report_pdf(request, report_id):
     """Export a report as PDF"""
     report = get_object_or_404(Report, id=report_id)
     
-    # Create PDF
-    buffer = io.BytesIO()
-    doc = SimpleDocTemplate(buffer, pagesize=letter, topMargin=0.5*inch)
-    elements = []
-    styles = getSampleStyleSheet()
-    
-    # Title
-    title_style = ParagraphStyle(
-        'CustomTitle',
-        parent=styles['Heading1'],
-        fontSize=24,
-        textColor='#1e3a8a',
-        spaceAfter=30,
-    )
-    elements.append(Paragraph(f"Rapport: {report.title}", title_style))
-    elements.append(Spacer(1, 0.3*inch))
-    
-    # Report details
-    details = f"""
-    <b>Statut:</b> {report.get_status_display()}<br/>
-    <b>Catégorie:</b> {report.get_category_display()}<br/>
-    <b>Priorité:</b> {report.get_priority_display()}<br/>
-    <b>Auteur:</b> {report.author.get_full_name()}<br/>
-    <b>Date de création:</b> {report.created_at.strftime('%d/%m/%Y %H:%M')}<br/>
-    """
-    elements.append(Paragraph(details, styles['Normal']))
-    elements.append(Spacer(1, 0.2*inch))
-    
-    # Description
-    elements.append(Paragraph("<b>Description:</b>", styles['Heading2']))
-    elements.append(Paragraph(report.description, styles['Normal']))
-    elements.append(Spacer(1, 0.2*inch))
-    
-    # Resolution notes if exists
-    if report.resolution_notes:
-        elements.append(Paragraph("<b>Notes de résolution:</b>", styles['Heading2']))
-        elements.append(Paragraph(report.resolution_notes, styles['Normal']))
-    
-    # Build PDF
-    doc.build(elements)
-    buffer.seek(0)
-    
-    response = HttpResponse(buffer, content_type='application/pdf')
-    response['Content-Disposition'] = f'attachment; filename="rapport_{report.id}.pdf"'
-    return response
+    # Check if reportlab is available
+    try:
+        from reportlab.lib.pagesizes import letter
+        from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
+        from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+        from reportlab.lib.units import inch
+        
+        # Create PDF
+        buffer = io.BytesIO()
+        doc = SimpleDocTemplate(buffer, pagesize=letter, topMargin=0.5*inch)
+        elements = []
+        styles = getSampleStyleSheet()
+        
+        # Title
+        title_style = ParagraphStyle(
+            'CustomTitle',
+            parent=styles['Heading1'],
+            fontSize=24,
+            spaceAfter=30,
+        )
+        elements.append(Paragraph(f"Rapport: {report.title}", title_style))
+        elements.append(Spacer(1, 0.3*inch))
+        
+        # Report details
+        details = f"""
+        <b>Statut:</b> {report.get_status_display()}<br/>
+        <b>Catégorie:</b> {report.get_category_display()}<br/>
+        <b>Priorité:</b> {report.get_priority_display()}<br/>
+        <b>Auteur:</b> {report.author.get_full_name()}<br/>
+        <b>Date de création:</b> {report.created_at.strftime('%d/%m/%Y %H:%M')}<br/>
+        """
+        elements.append(Paragraph(details, styles['Normal']))
+        elements.append(Spacer(1, 0.2*inch))
+        
+        # Description
+        elements.append(Paragraph("<b>Description:</b>", styles['Heading2']))
+        elements.append(Paragraph(report.description, styles['Normal']))
+        elements.append(Spacer(1, 0.2*inch))
+        
+        # Resolution notes if exists
+        if report.resolution_notes:
+            elements.append(Paragraph("<b>Notes de résolution:</b>", styles['Heading2']))
+            elements.append(Paragraph(report.resolution_notes, styles['Normal']))
+        
+        # Build PDF
+        doc.build(elements)
+        buffer.seek(0)
+        
+        response = HttpResponse(buffer, content_type='application/pdf')
+        response['Content-Disposition'] = f'attachment; filename="rapport_{report.id}.pdf"'
+        return response
+        
+    except ImportError:
+        return HttpResponse(
+            "L'export PDF n'est pas disponible. Installez reportlab: pip install reportlab",
+            status=503
+        )
+
+
+
 
 
 # ======================== API Views ========================

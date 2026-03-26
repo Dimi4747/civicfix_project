@@ -89,8 +89,8 @@ class User(AbstractUser):
         return self.role == 'admin' or self.is_superuser
     
     def is_moderator(self):
-        """Check if user is moderator"""
-        return self.role == 'moderator' or self.is_staff
+        """Check if user is moderator or admin (admins have moderator permissions)"""
+        return self.role in ['moderator', 'admin'] or self.is_staff or self.is_superuser
     
     def get_reports_count(self):
         """Get total reports created by user"""
@@ -163,13 +163,13 @@ class Notification(models.Model):
     """Système de notifications pour les utilisateurs"""
     
     NOTIFICATION_TYPES = (
-        ('like', '❤️ Rapport Aimé'),
-        ('comment', '💬 Commentaire'),
-        ('status_change', '🔄 Changement Statut'),
-        ('assigned', '⚠️ Rapport Assigné'),
-        ('resolved', '✅ Rapport Résolu'),
-        ('new_report', '📢 Nouveau Rapport'),
-        ('admin_action', '🛠️ Action Admin'),
+        ('like', '<i class="fas fa-heart"></i> Rapport Aimé'),
+        ('comment', '<i class="fas fa-comment"></i> Commentaire'),
+        ('status_change', '<i class="fas fa-sync-alt"></i> Changement Statut'),
+        ('assigned', '<i class="fas fa-exclamation-triangle"></i> Rapport Assigné'),
+        ('resolved', '<i class="fas fa-check-circle"></i> Rapport Résolu'),
+        ('new_report', '<i class="fas fa-bullhorn"></i> Nouveau Rapport'),
+        ('admin_action', '<i class="fas fa-tools"></i> Action Admin'),
     )
     
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)

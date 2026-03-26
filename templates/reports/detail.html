@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load report_filters %}
 
 {% block title %}{{ report.title }} - Détail du Rapport{% endblock %}
 
@@ -16,7 +17,7 @@
 {% endblock %}
 
 {% block content %}
-<div class="max-w-6xl mx-auto">
+<div class="w-full">
     <div class="mb-8">
         <div class="flex items-start justify-between mb-4">
             <div class="flex-1">
@@ -99,6 +100,7 @@
                 </h3>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {% for attachment in report.attachments.all %}
+                    {% if attachment.file|file_exists %}
                     
                     {% with attachment.file.url|lower as file_url %}
                         {# 1. Définir les valeurs par défaut #}
@@ -131,7 +133,7 @@
                             <i class="{{ icon }} {{ color }} text-3xl mb-2"></i>
                             <div class="flex-1 min-w-0 w-full">
                                 <p class="font-medium text-gray-900 truncate" title="{{ attachment.filename }}">{{ attachment.filename|truncatechars:18 }}</p>
-                                <p class="text-xs text-gray-500 mt-1">{{ attachment.file.size|filesizeformat }}</p>
+                                <p class="text-xs text-gray-500 mt-1">{{ attachment.file_size|filesizeformat }}</p>
                             </div>
                         </a>
                         
@@ -139,6 +141,7 @@
                         {% endwith %}
                         {% endwith %}
                     {% endwith %}
+                    {% endif %}
                     {% endfor %}
                 </div>
             </div>

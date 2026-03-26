@@ -57,7 +57,7 @@
                             {% endif %}
                             {% if notification.related_user %}
                             <a href="{% url 'dashboard:user-detail' notification.related_user.id %}" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
-                                👤 Voir l'utilisateur
+                                <i class="fas fa-user"></i> Voir l'utilisateur
                             </a>
                             {% endif %}
                         </div>
@@ -67,15 +67,15 @@
                         <div class="text-sm text-gray-500">{{ notification.created_at|date:"d/m/Y H:i" }}</div>
                         <div class="text-xs text-gray-400 mt-1">
                             {% if notification.notification_type == 'report_flagged' %}
-                            🚩 Rapport Signalé
+                            <i class="fas fa-flag"></i> Rapport Signalé
                             {% elif notification.notification_type == 'user_suspicious' %}
-                            ⚠️ Activité Suspecte
+                            <i class="fas fa-exclamation-triangle"></i> Activité Suspecte
                             {% elif notification.notification_type == 'urgent_report' %}
-                            🔴 Rapport Urgent
+                            <i class="fas fa-circle text-red-500"></i> Rapport Urgent
                             {% elif notification.notification_type == 'system_alert' %}
-                            🛑 Alerte Système
+                            <i class="fas fa-stop-circle"></i> Alerte Système
                             {% elif notification.notification_type == 'task_assigned' %}
-                            ✓ Tâche Assignée
+                            <i class="fas fa-check"></i> Tâche Assignée
                             {% endif %}
                         </div>
                     </div>

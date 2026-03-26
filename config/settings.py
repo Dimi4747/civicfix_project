@@ -4,9 +4,6 @@ Django 6.0 - Senior Developer Configuration
 """
 
 import os
-import pymysql
-pymysql.install_as_MySQLdb()
-
 from pathlib import Path
 from datetime import timedelta
 from decouple import config

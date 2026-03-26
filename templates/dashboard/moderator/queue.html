@@ -8,7 +8,7 @@
     <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <!-- Header -->
         <div class="mb-8">
-            <h1 class="text-3xl font-bold text-gray-900">🛡️ Ma File de Modération</h1>
+            <h1 class="text-3xl font-bold text-gray-900"><i class="fas fa-shield-alt"></i> Ma File de Modération</h1>
             <p class="mt-2 text-gray-600">Rapports assignés à votre modération</p>
         </div>
         
@@ -85,9 +85,9 @@
                 
                 <!-- Category & Info -->
                 <div class="flex items-center space-x-6 mb-4 text-sm text-gray-600">
-                    <span>📁 {{ report.get_category_display }}</span>
-                    <span>👁️ {{ report.views_count }} vues</span>
-                    <span>💬 {{ report.reportcomment_set.count }} commentaires</span>
+                    <span><i class="fas fa-folder"></i> {{ report.get_category_display }}</span>
+                    <span><i class="fas fa-eye"></i> {{ report.views_count }} vues</span>
+                    <span><i class="fas fa-comment"></i> {{ report.reportcomment_set.count }} commentaires</span>
                 </div>
                 
                 <!-- Action Button -->
