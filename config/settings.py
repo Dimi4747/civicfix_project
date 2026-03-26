@@ -4,6 +4,9 @@ Django 6.0 - Senior Developer Configuration
 """
 
 import os
+import pymysql
+pymysql.install_as_MySQLdb()
+
 from pathlib import Path
 from datetime import timedelta
 from decouple import config
@@ -35,6 +38,7 @@ INSTALLED_APPS = [
     'apps.accounts',
     'apps.reports',
     'apps.dashboard',
+    'apps.notifications',
 ]
 
 MIDDLEWARE = [
@@ -70,15 +74,9 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
-# Database Configuration (SQLite for dev, PostgreSQL for prod)
+# Database Configuration
 if DEBUG:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
-        }
-    }
-else:
+    # Développement local → PostgreSQL
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
@@ -87,6 +85,21 @@ else:
             'PASSWORD': config('DB_PASSWORD', default=''),
             'HOST': config('DB_HOST', default='localhost'),
             'PORT': config('DB_PORT', default='5432'),
+        }
+    }
+else:
+    # Production o2switch → MySQL
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': config('DB_NAME', default='civicfix'),
+            'USER': config('DB_USER', default=''),
+            'PASSWORD': config('DB_PASSWORD', default=''),
+            'HOST': config('DB_HOST', default='localhost'),
+            'PORT': config('DB_PORT', default='3306'),
+            'OPTIONS': {
+                'charset': 'utf8mb4',
+            },
         }
     }
 
@@ -162,7 +175,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:8000",
 ]
 
-# Cache Configuration for development
+# Cache Configuration
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
