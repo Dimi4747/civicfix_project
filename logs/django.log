@@ -1,0 +1,32 @@
+INFO 2026-03-26 22:58:58,152 autoreload Watching for file changes with StatReloader
+INFO 2026-03-26 23:04:55,088 autoreload Watching for file changes with StatReloader
+INFO 2026-03-26 23:30:14,112 autoreload Watching for file changes with StatReloader
+INFO 2026-03-26 23:30:14,944 server HTTP/2 support not enabled (install the http2 and tls Twisted extras)
+INFO 2026-03-26 23:30:14,945 server Configuring endpoint tcp:port=8000:interface=127.0.0.1
+INFO 2026-03-26 23:30:14,948 server Listening on TCP address 127.0.0.1:8000
+INFO 2026-03-26 23:30:22,905 runserver HTTP GET / 200 [0.37, 127.0.0.1:55873]
+INFO 2026-03-26 23:30:23,669 runserver HTTP GET / 200 [0.19, 127.0.0.1:53282]
+WARNING 2026-03-26 23:30:29,079 runserver HTTP GET /favicon.ico 404 [0.05, 127.0.0.1:55873]
+INFO 2026-03-26 23:30:32,304 runserver HTTP GET /reports/ 200 [0.30, 127.0.0.1:55873]
+INFO 2026-03-26 23:30:32,779 runserver HTTP GET /reports/ 200 [0.31, 127.0.0.1:53282]
+INFO 2026-03-26 23:30:33,097 runserver HTTP GET /media/reports/attachments/2026/03/26/Cameroon_of_Paul_Biya.jpg 200 [0.62, 127.0.0.1:53468]
+INFO 2026-03-26 23:30:33,100 runserver HTTP GET /media/reports/attachments/2026/03/26/During_the_rainy_season_the_streets_are_often_flooded_in__4eYQWxf.jpg 200 [0.62, 127.0.0.1:55873]
+INFO 2026-03-26 23:52:02,918 autoreload Watching for file changes with StatReloader
+INFO 2026-03-27 00:20:36,686 autoreload Watching for file changes with StatReloader
+INFO 2026-03-27 00:20:37,833 server HTTP/2 support not enabled (install the http2 and tls Twisted extras)
+INFO 2026-03-27 00:20:37,834 server Configuring endpoint tcp:port=8000:interface=127.0.0.1
+INFO 2026-03-27 00:20:37,837 server Listening on TCP address 127.0.0.1:8000
+INFO 2026-03-27 00:46:26,608 runserver HTTP GET /reports/ 200 [1.13, 127.0.0.1:56694]
+INFO 2026-03-27 00:46:26,787 runserver HTTP GET /reports/ 200 [0.16, 127.0.0.1:63291]
+INFO 2026-03-27 00:46:28,688 runserver HTTP GET /reports/ 200 [0.17, 127.0.0.1:63291]
+INFO 2026-03-27 01:25:28,656 autoreload C:\Users\adolp\civicfix_project\config\settings.py changed, reloading.
+INFO 2026-03-27 01:55:04,330 autoreload Watching for file changes with StatReloader
+INFO 2026-03-27 01:55:05,187 server HTTP/2 support not enabled (install the http2 and tls Twisted extras)
+INFO 2026-03-27 01:55:05,187 server Configuring endpoint tcp:port=8000:interface=127.0.0.1
+INFO 2026-03-27 01:55:05,189 server Listening on TCP address 127.0.0.1:8000
+INFO 2026-03-27 02:08:34,973 autoreload Watching for file changes with StatReloader
+INFO 2026-03-27 02:08:35,720 server HTTP/2 support not enabled (install the http2 and tls Twisted extras)
+INFO 2026-03-27 02:08:35,721 server Configuring endpoint tcp:port=8000:interface=127.0.0.1
+INFO 2026-03-27 02:08:35,723 server Listening on TCP address 127.0.0.1:8000
+INFO 2026-03-27 05:53:03,256 runserver HTTP GET /reports/ 200 [1.70, 127.0.0.1:63972]
+INFO 2026-03-27 05:53:03,506 runserver HTTP GET /reports/ 200 [0.22, 127.0.0.1:52590]

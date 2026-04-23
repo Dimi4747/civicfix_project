@@ -8,14 +8,17 @@ from pathlib import Path
 from datetime import timedelta
 from decouple import config
 
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Security settings
 SECRET_KEY = config('SECRET_KEY', default='django-insecure-civicfix-super-secret-key-change-in-production')
 DEBUG = config('DEBUG', default=True, cast=bool)
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1', cast=lambda v: [s.strip() for s in v.split(',')])
 
 # Application definition
 INSTALLED_APPS = [
-    'daphne',  # Django Channels ASGI
+    'daphne',  # Doit être en premier pour Channels/ASGI
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -26,10 +29,7 @@ INSTALLED_APPS = [
     
     # Third-party apps
     'rest_framework',
-    # 'rest_framework_simplejwt',  # Temporarily disabled due to pkg_resources issue
     'corsheaders',
-    # 'channels',  # Temporarily disabled
-
     
     # Project apps
     'apps.accounts',
@@ -50,7 +50,6 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'config.urls'
-ASGI_APPLICATION = 'config.asgi.application'
 
 TEMPLATES = [
     {
@@ -70,20 +69,20 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'config.wsgi.application'
+ASGI_APPLICATION = 'config.asgi.application'
 
-# Database Configuration
-if DEBUG:
-    # Développement local → PostgreSQL
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': config('DB_NAME', default='civicfix'),
-            'USER': config('DB_USER', default='cdiu8226_nyemb'),
-            'PASSWORD': config('DB_PASSWORD', default='DIMitr02'),
-            'HOST': config('DB_HOST', default='localhost'),
-            'PORT': config('DB_PORT', default='5432'),
-        }
+# Database configuration
+# Note: Django 4.2+ requires PostgreSQL 12 or later.
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': config('DB_NAME', default='civicfix'),
+        'USER': config('DB_USER', default='dimitri'),
+        'PASSWORD': config('DB_PASSWORD', default='dimitri123'),
+        'HOST': config('DB_HOST', default='localhost'),
+        'PORT': config('DB_PORT', default='5432'),
     }
+}
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
@@ -115,7 +114,6 @@ AUTH_USER_MODEL = 'accounts.User'
 # REST Framework Configuration
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        # 'rest_framework_simplejwt.authentication.JWTAuthentication',  # Disabled
         'rest_framework.authentication.SessionAuthentication',
     ),
     'DEFAULT_PERMISSION_CLASSES': (
@@ -126,7 +124,6 @@ REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS': [
         'rest_framework.filters.SearchFilter',
         'rest_framework.filters.OrderingFilter',
-        # 'django_filters.rest_framework.DjangoFilterBackend',  # Temporarily disabled
     ],
     'DEFAULT_THROTTLE_CLASSES': [
         'rest_framework.throttling.AnonRateThrottle',
@@ -174,15 +171,13 @@ CSRF_COOKIE_SECURE = not DEBUG
 CSRF_COOKIE_HTTPONLY = True
 
 # Channels Configuration
-ASGI_APPLICATION = 'config.asgi.application'
 CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels.layers.InMemoryChannelLayer'
     }
 }
 
-
-# Logging Configuration for Production
+# Logging Configuration
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -249,8 +244,6 @@ LOGGING = {
     },
 }
 
-# Créer le dossier logs s'il n'existe pas
-import os
+# S'assurer que le dossier logs existe
 LOGS_DIR = BASE_DIR / 'logs'
-if not os.path.exists(LOGS_DIR):
-    os.makedirs(LOGS_DIR)
+LOGS_DIR.mkdir(parents=True, exist_ok=True)
