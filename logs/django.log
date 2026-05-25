@@ -30,3 +30,10 @@ INFO 2026-03-27 02:08:35,721 server Configuring endpoint tcp:port=8000:interface
 INFO 2026-03-27 02:08:35,723 server Listening on TCP address 127.0.0.1:8000
 INFO 2026-03-27 05:53:03,256 runserver HTTP GET /reports/ 200 [1.70, 127.0.0.1:63972]
 INFO 2026-03-27 05:53:03,506 runserver HTTP GET /reports/ 200 [0.22, 127.0.0.1:52590]
+INFO 2026-05-25 14:04:02,280 autoreload Watching for file changes with StatReloader
+INFO 2026-05-25 14:04:04,752 server HTTP/2 support not enabled (install the http2 and tls Twisted extras)
+INFO 2026-05-25 14:04:04,753 server Configuring endpoint tcp:port=8000:interface=127.0.0.1
+INFO 2026-05-25 14:04:04,756 server Listening on TCP address 127.0.0.1:8000
+INFO 2026-05-25 14:04:14,256 runserver [mHTTP GET / 200 [0.16, 127.0.0.1:52073][0m
+INFO 2026-05-25 14:04:15,496 runserver [mHTTP GET / 200 [0.02, 127.0.0.1:63267][0m
+WARNING 2026-05-25 14:04:21,808 runserver [33mHTTP GET /favicon.ico 404 [0.04, 127.0.0.1:52073][0m
