@@ -1,3 +1,6 @@
+def some_utility_function(a, b):
+    """Exemple de fonction utilitaire pour les tests."""
+    return a + b
 """
 Dashboard Utilities - Helper functions for admin/moderator operations
 """
